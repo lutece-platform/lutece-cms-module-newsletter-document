@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?><plug-in>
+    
+    <!-- Plugin Informations -->
+    <name>newsletter-document</name>
+    <class>fr.paris.lutece.plugins.newsletter.modules.document.service.NewsletterDocumentPlugin</class>
+    <version>1.0.0</version>
+    <description>module.newsletter.document.plugin.description</description>
+    <documentation/>
+    <installation/>
+    <changes/>
+    <user-guide/>
+    <provider>newsletter.plugin.provider</provider>
+    <provider-url>http://lutece.paris.fr</provider-url>
+    <icon-url>images/admin/skin/plugins/newsletter/modules/document/newsletter-document.png</icon-url>
+    <copyright>Copyright 2001-2013 Mairie de Paris</copyright>
+    <core-version-dependency>
+		<min-core-version>4.0.0</min-core-version>
+		<max-core-version/>	
+    </core-version-dependency>
+    <db-pool-required>1</db-pool-required>
+    
+    <!-- Specific plugin CSS stylesheet -->
+    <css-stylesheets>
+        <css-stylesheets-scope>portal</css-stylesheets-scope>
+        <css-stylesheet>newsletter/newsletter.css</css-stylesheet>
+    </css-stylesheets>
+    
+</plug-in>
