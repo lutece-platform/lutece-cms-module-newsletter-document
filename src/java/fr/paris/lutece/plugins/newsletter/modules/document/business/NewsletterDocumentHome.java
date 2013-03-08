@@ -26,11 +26,13 @@ public class NewsletterDocumentHome
      * 
      * @param nDocumentListId the list identifier
      * @param dtDernierEnvoi the date of the last sending
+     * @param plugin The plugin
      * @return a collection of document
      */
-    public static Collection<Document> findDocumentsByDateAndList( int nDocumentListId, Timestamp dtDernierEnvoi )
+    public static Collection<Document> findDocumentsByDateAndList( int nDocumentListId, Timestamp dtDernierEnvoi,
+            Plugin plugin )
     {
-        return _dao.selectDocumentsByDateAndList( nDocumentListId, dtDernierEnvoi );
+        return _dao.selectDocumentsByDateAndList( nDocumentListId, dtDernierEnvoi, plugin );
     }
 
     /**
@@ -54,11 +56,12 @@ public class NewsletterDocumentHome
 
     /**
      * Returns a collection any portlet containing at least a published document
+     * @param plugin The plugin
      * @return the portlets in form of Collection
      */
-    public static ReferenceList getDocumentLists( )
+    public static ReferenceList getDocumentLists( Plugin plugin )
     {
-        return _dao.selectDocumentTypePortlets( );
+        return _dao.selectDocumentTypePortlets( plugin );
     }
 
     /**

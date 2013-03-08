@@ -33,9 +33,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 
+/**
+ * Newsletter document service. This class implements the singleton design
+ * pattern.
+ */
 public class NewsletterDocumentService
 {
     private static final String FULLSTOP = ".";
+
     private static final String PROPERTY_WEBAPP_URL = "newsletter.webapp.url";
     private static final String PROPERTY_WEBAPP_PATH = "newsletter.webapp.path";
     private static final String PROPERTY_NO_SECURED_IMG_FOLDER = "newsletter.nosecured.img.folder.name";
@@ -145,46 +150,66 @@ public class NewsletterDocumentService
         // get html from templates
         for ( Document document : listDocuments )
         {
-            Collection<Portlet> porletCollec = PublishingService.getInstance( ).getPortletsByDocumentId(
-                    Integer.toString( document.getId( ) ) );
-
-            //the document insert in the buffer must be publish in a authorized portlet
-            if ( PortletService.getInstance( ).getAuthorizedPortletCollection( porletCollec, user ).size( ) > 0 )
-            {
-                Map<String, Object> model = new HashMap<String, Object>( );
-                model.put( NewsLetterConstants.MARK_DOCUMENT, document );
-
-                // if noSecuredImg is true, it will copy all document's picture in a no secured folder
-                String strNoSecuredImg = AppPropertiesService.getProperty( PROPERTY_NO_SECURED_IMG_OPTION );
-
-                if ( ( strNoSecuredImg != null ) && strNoSecuredImg.equalsIgnoreCase( Boolean.TRUE.toString( ) ) )
-                {
-                    String strImgFolder = AppPropertiesService.getProperty( PROPERTY_NO_SECURED_IMG_FOLDER )
-                            + NewsLetterConstants.CONSTANT_SLASH;
-                    String pictureName = NewsletterDocumentService.getInstance( ).copyFileFromDocument(
-                            document,
-                            NewsLetterConstants.CONSTANT_IMG_FILE_TYPE,
-                            AppPropertiesService.getProperty( PROPERTY_WEBAPP_PATH, AppPathService.getWebAppPath( )
-                                    + NewsLetterConstants.CONSTANT_SLASH )
-                                    + strImgFolder );
-
-                    if ( pictureName != null )
-                    {
-                        model.put( MARK_IMG_PATH, AppPropertiesService.getProperty( PROPERTY_WEBAPP_URL, strBaseUrl )
-                                + strImgFolder + pictureName );
-                    }
-                }
-
-                model.put( NewsLetterConstants.MARK_BASE_URL, strBaseUrl );
-                model.put( NewsLetterConstants.MARK_DOCUMENT_PORTLETS_COLLEC, porletCollec );
-
-                HtmlTemplate template = AppTemplateService.getTemplate( strTemplatePath, locale, model );
-
-                sbDocumentLists.append( template.getHtml( ) );
-            }
+            String strContent = fillTemplateWithDocumentInfos( strTemplatePath, document,
+                    locale, strBaseUrl, user );
+            sbDocumentLists.append( strContent );
         }
 
         return sbDocumentLists.toString( );
+    }
+
+    /**
+     * Fills a given document template with the document data
+     * 
+     * @return the html code corresponding to the document data
+     * @param strBaseUrl The base url of the portal
+     * @param strTemplatePath The path of the template file
+     * @param document the object gathering the document data
+     * @param locale the locale used to build the template
+     * @param user The current user
+     */
+    public String fillTemplateWithDocumentInfos( String strTemplatePath, Document document, Locale locale,
+            String strBaseUrl, AdminUser user )
+    {
+        Collection<Portlet> porletCollec = PublishingService.getInstance( ).getPortletsByDocumentId(
+                Integer.toString( document.getId( ) ) );
+        porletCollec = PortletService.getInstance( ).getAuthorizedPortletCollection( porletCollec, user );
+        //the document insert in the buffer must be publish in a authorized portlet
+        if ( porletCollec.size( ) > 0 )
+        {
+            //the document insert in the buffer must be publish in a authorized portlet
+            Map<String, Object> model = new HashMap<String, Object>( );
+            model.put( NewsLetterConstants.MARK_DOCUMENT, document );
+
+            // if noSecuredImg is true, it will copy all document's picture in a no secured folder
+            String strNoSecuredImg = AppPropertiesService.getProperty( PROPERTY_NO_SECURED_IMG_OPTION );
+
+            if ( ( strNoSecuredImg != null ) && strNoSecuredImg.equalsIgnoreCase( Boolean.TRUE.toString( ) ) )
+            {
+                String strImgFolder = AppPropertiesService.getProperty( PROPERTY_NO_SECURED_IMG_FOLDER )
+                        + NewsLetterConstants.CONSTANT_SLASH;
+                String pictureName = NewsletterDocumentService.getInstance( ).copyFileFromDocument(
+                        document,
+                        NewsLetterConstants.CONSTANT_IMG_FILE_TYPE,
+                        AppPropertiesService.getProperty( PROPERTY_WEBAPP_PATH, AppPathService.getWebAppPath( )
+                                + NewsLetterConstants.CONSTANT_SLASH )
+                                + strImgFolder );
+
+                if ( pictureName != null )
+                {
+                    model.put( MARK_IMG_PATH, AppPropertiesService.getProperty( PROPERTY_WEBAPP_URL, strBaseUrl )
+                            + strImgFolder + pictureName );
+                }
+            }
+
+            model.put( NewsLetterConstants.MARK_BASE_URL, strBaseUrl );
+            model.put( NewsLetterConstants.MARK_DOCUMENT_PORTLETS_COLLEC, porletCollec );
+
+            HtmlTemplate template = AppTemplateService.getTemplate( strTemplatePath, locale, model );
+
+            return template.getHtml( );
+        }
+        return StringUtils.EMPTY;
     }
 
 }

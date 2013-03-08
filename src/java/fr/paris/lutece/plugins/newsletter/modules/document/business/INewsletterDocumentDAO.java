@@ -8,6 +8,9 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 
+/**
+ * Interface for NewsletterDocumentDAO
+ */
 public interface INewsletterDocumentDAO
 {
 
@@ -17,14 +20,16 @@ public interface INewsletterDocumentDAO
      * @return a list of documents
      * @param nCategoryId The id of the category
      * @param dateLastSending the date of the last newsletter sending
+     * @param plugin the Plugin
      */
-    Collection<Document> selectDocumentsByDateAndList( int nCategoryId, Timestamp dateLastSending );
+    Collection<Document> selectDocumentsByDateAndList( int nCategoryId, Timestamp dateLastSending, Plugin plugin );
 
     /**
      * Returns the list of the portlets which are document portlets
+     * @param plugin the Plugin
      * @return the list in form of a Collection object
      */
-    ReferenceList selectDocumentTypePortlets( );
+    ReferenceList selectDocumentTypePortlets( Plugin plugin );
 
     /**
      * Associate a new topic to a newsletter

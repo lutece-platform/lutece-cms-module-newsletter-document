@@ -17,7 +17,12 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 
+
+/**
+ * The newsletter document section service
+ */
 public class NewsletterDocumentSectionService implements INewsletterSectionService
 {
     private static final String NEWSLETTER_DOCUMENT_SECTION_TYPE = "NEWSLETTER_DOCUMENT";
@@ -139,7 +144,7 @@ public class NewsletterDocumentSectionService implements INewsletterSectionServi
     public String getHtmlContent( NewsletterSection newsletterSection, AdminUser user, Locale locale )
     {
         // TODO Auto-generated method stub
-        return null;
+        return StringUtils.EMPTY;
     }
 
     private synchronized Plugin getNewsletterDocumentPlugin( )

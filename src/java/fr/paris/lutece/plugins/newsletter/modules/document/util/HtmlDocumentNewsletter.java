@@ -206,6 +206,9 @@ public class HtmlDocumentNewsletter
      * its to unsecured urls
      * and copy this elements into an unsecured folder
      * @param elementType the type of element to get
+     * @param strUnsecuredBaseUrl The unsecured base URL
+     * @param strUnsecuredFolderPath The unsecured folder path
+     * @param strUnsecuredFolder The unsecured folder
      */
     public void convertUrlsToUnsecuredUrls( ElementUrl elementType, String strUnsecuredBaseUrl,
             String strUnsecuredFolderPath, String strUnsecuredFolder )

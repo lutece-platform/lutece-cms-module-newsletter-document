@@ -35,10 +35,12 @@ package fr.paris.lutece.plugins.newsletter.modules.document.web;
 
 import fr.paris.lutece.plugins.document.business.Document;
 import fr.paris.lutece.plugins.document.business.DocumentHome;
+import fr.paris.lutece.plugins.document.service.DocumentPlugin;
 import fr.paris.lutece.plugins.newsletter.business.NewsLetterTemplate;
 import fr.paris.lutece.plugins.newsletter.business.NewsLetterTemplateHome;
 import fr.paris.lutece.plugins.newsletter.modules.document.business.NewsletterDocumentHome;
-import fr.paris.lutece.plugins.newsletter.modules.document.util.NewsletterDocumentUtils;
+import fr.paris.lutece.plugins.newsletter.modules.document.service.NewsletterDocumentService;
+import fr.paris.lutece.plugins.newsletter.service.NewsletterPlugin;
 import fr.paris.lutece.plugins.newsletter.util.NewsLetterConstants;
 import fr.paris.lutece.plugins.newsletter.util.NewsletterUtils;
 import fr.paris.lutece.portal.service.admin.AdminUserService;
@@ -70,10 +72,14 @@ import org.apache.commons.lang.StringEscapeUtils;
 /**
  * This class is responsible for the insertion of document lists in the
  * newsletter.
- * It is a HtmlService.
  */
 public class NewsletterDocumentServiceJspBean extends InsertServiceJspBean implements InsertServiceSelectionBean
 {
+    /**
+     * Serial UID
+     */
+    private static final long serialVersionUID = -4095074358460689539L;
+
     /**
      * The newsletter right needed to manage
      */
@@ -99,22 +105,18 @@ public class NewsletterDocumentServiceJspBean extends InsertServiceJspBean imple
 
     // property
     private static final String PROPERTY_FRAGMENT_COMBO_ALL_DOCUMENT_LIST_ITEM = ".documents.selection.lists.all";
-    private static final String PARAMETER_PLUGIN = "plugin_name";
     private static final String MESSAGE_NO_DOCUMENT_TEMPLATE = "newsletter.message.noDocumentTemplate";
     private static final String MESSAGE_NO_DOCUMENT_CHOSEN = "newsletter.message.noDocumentChosen";
 
-    //  the plugin instance
-    private Plugin _plugin;
-
     /**
      * Inserts Html code by the insert service
-     * @see fr.paris.lutece.portal.web.insertservice.HtmlServiceSelectionBean#getInsertServiceSelectorUI(javax.servlet.http.HttpServletRequest)
      * @param request The Http request
      * @return The string representation of the category
      */
     public String getInsertServiceSelectorUI( HttpServletRequest request )
     {
-        _plugin = PluginService.getPlugin( request.getParameter( PARAMETER_PLUGIN ) );
+        Plugin pluginDocument = PluginService.getPlugin( DocumentPlugin.PLUGIN_NAME );
+        Plugin pluginNewsletter = PluginService.getPlugin( NewsletterPlugin.PLUGIN_NAME );
 
         Locale locale = AdminUserService.getLocale( request );
 
@@ -136,27 +138,30 @@ public class NewsletterDocumentServiceJspBean extends InsertServiceJspBean imple
 
         // Criteria
         // Combo of available document list
-        ReferenceList listDocumentlists = NewsletterDocumentHome.getDocumentLists( );
-        listDocumentlists.addItem( 0, I18nService.getLocalizedString( _plugin.getName( )
-                + PROPERTY_FRAGMENT_COMBO_ALL_DOCUMENT_LIST_ITEM, locale ) );
+        ReferenceList listDocumentlists = NewsletterDocumentHome.getDocumentLists( pluginDocument );
+        listDocumentlists.addItem(
+                0,
+                I18nService.getLocalizedString( pluginNewsletter.getName( )
+                        + PROPERTY_FRAGMENT_COMBO_ALL_DOCUMENT_LIST_ITEM, locale ) );
         model.put( MARK_COMBO_DOCUMENT_LIST, listDocumentlists );
 
         // re-display the published date field
         model.put( BOOKMARK_START_PUBLISHED_DATE, strPublishedDate );
 
         // Document list
-        Collection<Document> list = NewsletterDocumentHome.findDocumentsByDateAndList( nDocumentListId, publishedDate );
+        Collection<Document> list = NewsletterDocumentHome.findDocumentsByDateAndList( nDocumentListId, publishedDate,
+                pluginDocument );
         model.put( MARK_DOCUMENT_LIST, list );
 
         ReferenceList templateList = NewsLetterTemplateHome.getTemplatesListByType(
-                NewsLetterTemplate.CONSTANT_ID_DOCUMENT, _plugin );
+                NewsLetterTemplate.CONSTANT_ID_DOCUMENT, pluginNewsletter );
         model.put( MARK_TEMPLATES_LIST, templateList );
 
         //Replace portal path for editor and document display
         String strWebappUrl = AppPathService.getBaseUrl( request );
         model.put( NewsLetterConstants.WEBAPP_PATH_FOR_LINKSERVICE, strWebappUrl );
-        model.put( PARAMETER_PLUGIN, _plugin.getName( ) );
         model.put( MARK_INPUT, request.getParameter( PARAMETER_INPUT ) );
+        model.put( PARAMETER_DOCUMENT_LIST_ID, strDocumentListId );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_SELECT_DOCUMENTS, locale, model );
 
@@ -184,7 +189,7 @@ public class NewsletterDocumentServiceJspBean extends InsertServiceJspBean imple
      */
     public String doInsert( HttpServletRequest request )
     {
-        _plugin = PluginService.getPlugin( request.getParameter( PARAMETER_PLUGIN ) );
+        Plugin pluginNewsletter = PluginService.getPlugin( NewsletterPlugin.PLUGIN_NAME );
 
         String strBaseUrl = AppPathService.getBaseUrl( request );
         String strInput = request.getParameter( PARAMETER_INPUT );
@@ -209,14 +214,14 @@ public class NewsletterDocumentServiceJspBean extends InsertServiceJspBean imple
         Collection<String> documentsList = new ArrayList<String>( );
 
         // retrieves the html template in order to use it to display the list of documents
-        String strPathDocumentTemplate = NewsletterUtils.getHtmlTemplatePath( nTemplateId, _plugin );
+        String strPathDocumentTemplate = NewsletterUtils.getHtmlTemplatePath( nTemplateId, pluginNewsletter );
 
         for ( int i = 0; i < strDocumentsIdsList.length; i++ )
         {
             int nDocumentId = Integer.parseInt( strDocumentsIdsList[i] );
             Document document = DocumentHome.findByPrimaryKey( nDocumentId );
-            String strDocumentHtmlCode = NewsletterDocumentUtils.fillTemplateWithDocumentInfos(
-                    strPathDocumentTemplate, document, 0, _plugin, locale, strBaseUrl );
+            String strDocumentHtmlCode = NewsletterDocumentService.getInstance( ).fillTemplateWithDocumentInfos(
+                    strPathDocumentTemplate, document, locale, strBaseUrl, AdminUserService.getAdminUser( request ) );
             documentsList.add( strDocumentHtmlCode );
         }
 

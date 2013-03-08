@@ -16,8 +16,7 @@ import java.util.List;
  */
 public class NewsletterDocumentDAO implements INewsletterDocumentDAO
 {
-    private static final String SQL_QUERY_SELECT_DOCUMENT_BY_DATE_AND_CATEGORY = "SELECT a.id_document , a.code_document_type, a.date_creation , a.date_modification, a.title,a.document_summary FROM document a"
-            + "INNER JOIN  document_published b ON a.id_document=b.id_document  INNER JOIN document_category_link c ON b.id_document=c.id_document WHERE a.date_modification >=? AND c.id_category= ? ORDER BY a.date_modification DESC";
+    private static final String SQL_QUERY_SELECT_DOCUMENT_BY_DATE_AND_CATEGORY = "SELECT a.id_document , a.code_document_type, a.date_creation , a.date_modification, a.title,a.document_summary FROM document a INNER JOIN  document_published b ON a.id_document=b.id_document INNER JOIN document_category_link c ON b.id_document=c.id_document WHERE a.date_modification >=? AND c.id_category= ? ORDER BY a.date_modification DESC";
     private static final String SQL_QUERY_DOCUMENT_TYPE_PORTLET = " SELECT DISTINCT id_portlet , name FROM core_portlet WHERE id_portlet_type='DOCUMENT_PORTLET'  ";
     private static final String SQL_QUERY_ASSOCIATE_NEWSLETTER_CATEGORY_LIST = "INSERT INTO newsletter_category_list ( id_newsletter , id_category_list ) VALUES ( ?, ? ) ";
     private static final String SQL_QUERY_SELECTALL_ID_DOCUMENT = " SELECT a.id_document FROM document_category_link a WHERE a.id_category = ? ";
@@ -27,9 +26,9 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
      * {@inheritDoc}
      */
     @Override
-    public Collection<Document> selectDocumentsByDateAndList( int nCategoryId, Timestamp dateLastSending )
+    public Collection<Document> selectDocumentsByDateAndList( int nCategoryId, Timestamp dateLastSending, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_DOCUMENT_BY_DATE_AND_CATEGORY );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_DOCUMENT_BY_DATE_AND_CATEGORY, plugin );
         daoUtil.setTimestamp( 1, dateLastSending );
         daoUtil.setInt( 2, nCategoryId );
 
@@ -58,9 +57,9 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
      * {@inheritDoc}
      */
     @Override
-    public ReferenceList selectDocumentTypePortlets( )
+    public ReferenceList selectDocumentTypePortlets( Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DOCUMENT_TYPE_PORTLET );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DOCUMENT_TYPE_PORTLET, plugin );
         daoUtil.executeQuery( );
 
         ReferenceList list = new ReferenceList( );
