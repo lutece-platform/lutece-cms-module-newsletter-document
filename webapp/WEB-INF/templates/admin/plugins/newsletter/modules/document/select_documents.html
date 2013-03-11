@@ -2,16 +2,16 @@
 
 <form class="form-horizontal" method="post" action="jsp/admin/plugins/newsletter/modules/document/DoSearchDocuments.jsp">
 	<fieldset>
-		<legend>#i18n{newsletter.select_documents.labelSearchCriteria}</legend>
+		<legend>#i18n{module.newsletter.document.select_documents.labelSearchCriteria}</legend>
 	    <input type="hidden" name="input" value="${input}" />
 	   	<div class="control-group">
-			<label class="control-label" for="document_list_id">#i18n{newsletter.select_documents.labelDocumentListCollection} *</label>
+			<label class="control-label" for="document_list_id">#i18n{module.newsletter.document.select_documents.labelDocumentListCollection} *</label>
 			<div class="controls">
 				<@combo name="document_list_id" default_value=document_list_id items=documents_lists_list />
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label" for="published_date">#i18n{newsletter.select_documents.labelPublishedSince} *</label>
+			<label class="control-label" for="published_date">#i18n{module.newsletter.document.select_documents.labelPublishedSince} *</label>
 	    	<div class="controls">
 				<input name="published_date" value="${start_published_date}" checked="checked" type="text" />
 			</div>
@@ -19,7 +19,7 @@
 		<div class="control-group">
 			<label class="control-label"></label>
 			<div class="controls">
-	    		<button class="btn btn-primary btn-small" type="submit" >#i18n{newsletter.select_documents.buttonSearch}</button>
+	    		<button class="btn btn-primary btn-small" type="submit" >#i18n{module.newsletter.document.select_documents.buttonSearch}</button>
 	    	</div>
 	    </div>
 	</fieldset>
@@ -27,13 +27,13 @@
 
 <form class="form-horizontal" method="post" action="jsp/admin/plugins/newsletter/modules/document/DoInsertDocuments.jsp" name="insertDocuments" >
 	<fieldset>
-		<legend>#i18n{newsletter.select_documents.labelDocumentList}</legend>
+		<legend>#i18n{module.newsletter.document.select_documents.labelDocumentList}</legend>
 	    <input type="hidden" name="input" value="${input}" />
 	    <table class="table table-striped table-condensed">
 			<tr>
 	            <th></th>
-	            <th>#i18n{newsletter.select_documents.labelDocumentDate}</th>
-	            <th>#i18n{newsletter.select_documents.labelDocumentAdd}</th>
+	            <th>#i18n{module.newsletter.document.select_documents.labelDocumentDate}</th>
+	            <th>#i18n{module.newsletter.document.select_documents.labelDocumentAdd}</th>
 	        </tr>
 	        <#list document_list as document>
 	        <tr>
@@ -46,6 +46,6 @@
 	        </#list>
 	    </table>
 	    <@combo name="template_id" default_value=0 items=documents_templates_list />
-		<button class="btn btn-primary btn-small" type="submit" >#i18n{newsletter.select_documents.buttonValidate}</button>
+		<button class="btn btn-primary btn-small" type="submit" >#i18n{module.newsletter.document.select_documents.buttonValidate}</button>
 	</fieldset>
 </form>

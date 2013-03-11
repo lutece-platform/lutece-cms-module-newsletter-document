@@ -53,6 +53,7 @@ import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.web.insert.InsertServiceJspBean;
 import fr.paris.lutece.portal.web.insert.InsertServiceSelectionBean;
+import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.date.DateUtil;
 import fr.paris.lutece.util.html.HtmlTemplate;
@@ -67,6 +68,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -104,15 +106,18 @@ public class NewsletterDocumentServiceJspBean extends InsertServiceJspBean imple
     private static final String PARAMETER_INPUT = "input";
 
     // property
-    private static final String PROPERTY_FRAGMENT_COMBO_ALL_DOCUMENT_LIST_ITEM = ".documents.selection.lists.all";
-    private static final String MESSAGE_NO_DOCUMENT_TEMPLATE = "newsletter.message.noDocumentTemplate";
-    private static final String MESSAGE_NO_DOCUMENT_CHOSEN = "newsletter.message.noDocumentChosen";
+    private static final String LABEL_FRAGMENT_COMBO_ALL_DOCUMENT_LIST_ITEM = "module.newsletter.document.documents.selection.lists.all";
+    private static final String MESSAGE_NO_DOCUMENT_TEMPLATE = "module.newsletter.document.message.noDocumentTemplate";
+    private static final String MESSAGE_NO_DOCUMENT_CHOSEN = "module.newsletter.document.message.noDocumentChosen";
+
+    private static final String CONSTANT_STRING_ZERO = "0";
 
     /**
      * Inserts Html code by the insert service
      * @param request The Http request
      * @return The string representation of the category
      */
+    @Override
     public String getInsertServiceSelectorUI( HttpServletRequest request )
     {
         Plugin pluginDocument = PluginService.getPlugin( DocumentPlugin.PLUGIN_NAME );
@@ -122,16 +127,16 @@ public class NewsletterDocumentServiceJspBean extends InsertServiceJspBean imple
 
         // get the document list from request
         String strDocumentListId = request.getParameter( PARAMETER_DOCUMENT_LIST_ID );
-        strDocumentListId = ( strDocumentListId != null ) ? strDocumentListId : "0";
+        strDocumentListId = ( strDocumentListId != null ) ? strDocumentListId : CONSTANT_STRING_ZERO;
 
         int nDocumentListId = Integer.parseInt( strDocumentListId );
 
         // get template from request
         String strTemplateId = request.getParameter( PARAMETER_TEMPLATE_ID );
-        strTemplateId = ( strTemplateId != null ) ? strTemplateId : "0";
+        strTemplateId = ( strTemplateId != null ) ? strTemplateId : CONSTANT_STRING_ZERO;
 
         String strPublishedDate = request.getParameter( PARAMETER_PUBLISHED_DATE );
-        strPublishedDate = ( strPublishedDate != null ) ? strPublishedDate : "";
+        strPublishedDate = ( strPublishedDate != null ) ? strPublishedDate : StringUtils.EMPTY;
 
         Timestamp publishedDate = DateUtil.formatTimestamp( strPublishedDate, AdminUserService.getLocale( request ) );
         Map<String, Object> model = new HashMap<String, Object>( );
@@ -139,10 +144,10 @@ public class NewsletterDocumentServiceJspBean extends InsertServiceJspBean imple
         // Criteria
         // Combo of available document list
         ReferenceList listDocumentlists = NewsletterDocumentHome.getDocumentLists( pluginDocument );
-        listDocumentlists.addItem(
-                0,
-                I18nService.getLocalizedString( pluginNewsletter.getName( )
-                        + PROPERTY_FRAGMENT_COMBO_ALL_DOCUMENT_LIST_ITEM, locale ) );
+        ReferenceItem refItem = new ReferenceItem( );
+        refItem.setCode( CONSTANT_STRING_ZERO );
+        refItem.setName( I18nService.getLocalizedString( LABEL_FRAGMENT_COMBO_ALL_DOCUMENT_LIST_ITEM, locale ) );
+        listDocumentlists.add( 0, refItem );
         model.put( MARK_COMBO_DOCUMENT_LIST, listDocumentlists );
 
         // re-display the published date field
@@ -195,17 +200,19 @@ public class NewsletterDocumentServiceJspBean extends InsertServiceJspBean imple
         String strInput = request.getParameter( PARAMETER_INPUT );
         Map<String, Object> model = new HashMap<String, Object>( );
         String strTemplateId = request.getParameter( PARAMETER_TEMPLATE_ID );
-        strTemplateId = ( strTemplateId != null ) ? strTemplateId : "0";
+        strTemplateId = ( strTemplateId != null ) ? strTemplateId : CONSTANT_STRING_ZERO;
 
-        int nTemplateId = Integer.parseInt( strTemplateId );
-        String[] strDocumentsIdsList = request.getParameterValues( PARAMETER_DOCUMENTS_LIST );
-
-        if ( ( strTemplateId == null ) || strTemplateId.equals( "0" ) || strTemplateId.equals( "" ) )
+        if ( StringUtils.isEmpty( strTemplateId ) || !StringUtils.isNumeric( strTemplateId )
+                || StringUtils.equals( strTemplateId, CONSTANT_STRING_ZERO ) )
         {
             return AdminMessageService.getMessageUrl( request, MESSAGE_NO_DOCUMENT_TEMPLATE, AdminMessage.TYPE_STOP );
         }
 
-        if ( ( strDocumentsIdsList == null ) || strDocumentsIdsList.equals( "" ) )
+        int nTemplateId = Integer.parseInt( strTemplateId );
+        String[] strDocumentsIdsList = request.getParameterValues( PARAMETER_DOCUMENTS_LIST );
+
+
+        if ( ( strDocumentsIdsList == null ) )
         {
             return AdminMessageService.getMessageUrl( request, MESSAGE_NO_DOCUMENT_CHOSEN, AdminMessage.TYPE_STOP );
         }

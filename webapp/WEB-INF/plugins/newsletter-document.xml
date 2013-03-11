@@ -23,9 +23,9 @@
     <insert-services>
         <insert-service>
             <insert-service-id>document_selection_hs</insert-service-id>
-            <insert-service-name>newsletter.insertService.name</insert-service-name>
+            <insert-service-name>module.newsletter.document.insertService.name</insert-service-name>
             <insert-service-bean-class>fr.paris.lutece.plugins.newsletter.modules.document.web.NewsletterDocumentServiceJspBean</insert-service-bean-class>
-            <insert-service-label>newsletter.insertService.label</insert-service-label>
+            <insert-service-label>module.newsletter.document.insertService.label</insert-service-label>
         </insert-service>
     </insert-services>
     
