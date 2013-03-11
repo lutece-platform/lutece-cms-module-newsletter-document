@@ -15,6 +15,35 @@ public interface INewsletterDocumentDAO
 {
 
     /**
+     * Get a newsletter document section from its id
+     * @param nIdSection the id of the section to get
+     * @param plugin The plugin
+     * @return The section, or null if no section was found
+     */
+    NewsletterDocumentSection findByPrimaryKey( int nIdSection, Plugin plugin );
+
+    /**
+     * Update a newsletter document section
+     * @param section The section to update
+     * @param plugin The plugin
+     */
+    void updateDocumentSection( NewsletterDocumentSection section, Plugin plugin );
+
+    /**
+     * Remove a newsletter document section from the database
+     * @param nIdSection The id of the newsletter document section to remove
+     * @param plugin The plugin
+     */
+    void deleteDocumentSection( int nIdSection, Plugin plugin );
+
+    /**
+     * Insert a new newsletter document section into the database
+     * @param section The newsletter document section to insert
+     * @param plugin the plugin
+     */
+    void createDocumentSection( NewsletterDocumentSection section, Plugin plugin );
+
+    /**
      * Select the list of documents published since the last sending of the
      * newsletter
      * @return a list of documents

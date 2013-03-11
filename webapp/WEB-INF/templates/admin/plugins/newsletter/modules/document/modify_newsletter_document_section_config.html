@@ -1,0 +1,19 @@
+<div class="control-group">
+	<label class="control-label" for="category_list_id">#i18n{newsletter.modify_newsletter.categoryList} *</label>
+	<div class="controls">
+		<#if category_list?has_content>
+			<select multiple="multiple" id="category_list_id" name="category_list_id" >
+				<#list category_list as item>
+					<#if item.checked>
+						<option selected="selected" value="${item.code}">${item.name}</option>
+					<#else>
+						<option value="${item.code}">${item.name}</option>
+					</#if>
+				</#list>
+			</select>
+		<#else>
+		#i18n{newsletter.modify_newsletter.labelNoCategory}
+			<input type="hidden" id="newsletter_no_category" name="newsletter_no_category" value="no_category" />
+		</#if>
+	</div>
+</div>
