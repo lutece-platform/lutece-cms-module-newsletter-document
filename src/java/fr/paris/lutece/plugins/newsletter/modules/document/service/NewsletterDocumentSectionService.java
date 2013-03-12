@@ -10,7 +10,6 @@ import fr.paris.lutece.plugins.newsletter.modules.document.business.NewsletterDo
 import fr.paris.lutece.plugins.newsletter.service.NewsletterPlugin;
 import fr.paris.lutece.plugins.newsletter.service.NewsletterService;
 import fr.paris.lutece.plugins.newsletter.service.section.INewsletterSectionService;
-import fr.paris.lutece.plugins.newsletter.service.section.NewsletterSectionService;
 import fr.paris.lutece.plugins.newsletter.util.NewsletterUtils;
 import fr.paris.lutece.portal.business.user.AdminUser;
 import fr.paris.lutece.portal.service.i18n.I18nService;
@@ -62,7 +61,6 @@ public class NewsletterDocumentSectionService implements INewsletterSectionServi
     private Plugin _newsletterDocumentPlugin;
     private Plugin _newsletterPlugin;
     private NewsletterService _newsletterService;
-    private NewsletterSectionService _newsletterSectionService;
 
     /**
      * {@inheritDoc}
@@ -229,19 +227,6 @@ public class NewsletterDocumentSectionService implements INewsletterSectionServi
             _newsletterDocumentPlugin = PluginService.getPlugin( NewsletterDocumentPlugin.PLUGIN_NAME );
         }
         return _newsletterDocumentPlugin;
-    }
-
-    /**
-     * Get the newsletter section service instance of this service
-     * @return The newsletter section service of this service
-     */
-    private NewsletterSectionService getNewsletterSectionService( )
-    {
-        if ( _newsletterSectionService == null )
-        {
-            _newsletterSectionService = NewsletterSectionService.getService( );
-        }
-        return _newsletterSectionService;
     }
 
     /**

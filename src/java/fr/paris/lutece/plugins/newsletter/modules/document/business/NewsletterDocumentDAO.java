@@ -24,7 +24,6 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
     private static final String SQL_QUERY_SELECT_DOCUMENT_BY_DATE_AND_LIST_DOCUMENT = "SELECT DISTINCT a.id_document , a.code_document_type, a.date_creation , a.date_modification, a.title, a.document_summary FROM document a INNER JOIN document_published b ON a.id_document=b.id_document INNER JOIN core_portlet c ON b.id_portlet=c.id_portlet WHERE c.id_portlet_type='DOCUMENT_LIST_PORTLET' ";
     private static final String SQL_QUERY_DOCUMENT_TYPE_PORTLET = " SELECT DISTINCT id_portlet , name FROM core_portlet WHERE id_portlet_type='DOCUMENT_LIST_PORTLET'  ";
     private static final String SQL_QUERY_ASSOCIATE_NEWSLETTER_CATEGORY_LIST = "INSERT INTO newsletter_document_category ( id_section , id_category ) VALUES ( ?, ? ) ";
-    private static final String SQL_QUERY_SELECTALL_ID_DOCUMENT = " SELECT a.id_document FROM document_category_link a WHERE a.id_category = ? ";
     private static final String SQL_QUERY_DELETE_NEWSLETTER_CATEGORY_LIST = "DELETE FROM newsletter_document_category WHERE id_section = ?";
     private static final String SQL_QUERY_SELECT_NEWSLETTER_CATEGORY_IDS = "SELECT DISTINCT id_category FROM newsletter_document_category WHERE id_section = ?";
     private static final String SQL_FILTER_DATE_MODIF = " a.date_modification >=? ";
@@ -171,37 +170,6 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
         daoUtil.executeUpdate( );
         daoUtil.free( );
     }
-
-    //    /**
-    //     * Select a list of Id Documents for a specified category
-    //     * @param nIdCategory The category name
-    //     * @return The array of Id Document
-    //     */
-    //    public int[] selectAllIdDocument( int nIdCategory )
-    //    {
-    //        Collection<Integer> listIdDocument = new ArrayList<Integer>( );
-    //        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_DOCUMENT );
-    //        daoUtil.setInt( 1, nIdCategory );
-    //        daoUtil.executeQuery( );
-    //
-    //        while ( daoUtil.next( ) )
-    //        {
-    //            listIdDocument.add( daoUtil.getInt( 1 ) );
-    //        }
-    //
-    //        daoUtil.free( );
-    //
-    //        // Convert ArrayList to Int[]
-    //        int[] arrayIdDocument = new int[listIdDocument.size( )];
-    //        int i = 0;
-    //
-    //        for ( Integer nIdDocument : listIdDocument )
-    //        {
-    //            arrayIdDocument[i++] = nIdDocument.intValue( );
-    //        }
-    //
-    //        return arrayIdDocument;
-    //    }
 
     /**
      * {@inheritDoc}
