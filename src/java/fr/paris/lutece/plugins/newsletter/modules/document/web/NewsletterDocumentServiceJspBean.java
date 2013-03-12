@@ -40,7 +40,9 @@ import fr.paris.lutece.plugins.newsletter.business.NewsLetterTemplateHome;
 import fr.paris.lutece.plugins.newsletter.modules.document.business.NewsletterDocumentHome;
 import fr.paris.lutece.plugins.newsletter.modules.document.service.NewsletterDocumentSectionService;
 import fr.paris.lutece.plugins.newsletter.modules.document.service.NewsletterDocumentService;
+import fr.paris.lutece.plugins.newsletter.modules.document.util.NewsletterDocumentUtils;
 import fr.paris.lutece.plugins.newsletter.service.NewsletterPlugin;
+import fr.paris.lutece.plugins.newsletter.service.NewsletterService;
 import fr.paris.lutece.plugins.newsletter.util.NewsLetterConstants;
 import fr.paris.lutece.plugins.newsletter.util.NewsletterUtils;
 import fr.paris.lutece.portal.service.admin.AdminUserService;
@@ -97,6 +99,7 @@ public class NewsletterDocumentServiceJspBean extends InsertServiceJspBean imple
     private static final String MARK_COMBO_DOCUMENT_LIST = "documents_lists_list";
     private static final String MARK_INPUT = "input";
     private static final String MARK_TEMPLATES_LIST = "documents_templates_list";
+    private static final String MARK_DOCUMENTS_LIST = "documents_list";
 
     // parameters
     private static final String PARAMETER_DOCUMENT_LIST_ID = "document_list_id";
@@ -111,6 +114,7 @@ public class NewsletterDocumentServiceJspBean extends InsertServiceJspBean imple
     private static final String MESSAGE_NO_DOCUMENT_CHOSEN = "module.newsletter.document.message.noDocumentChosen";
 
     private static final String CONSTANT_STRING_ZERO = "0";
+    private NewsletterService _newsletterService = NewsletterService.getService( );
 
     /**
      * Inserts Html code by the insert service
@@ -129,7 +133,7 @@ public class NewsletterDocumentServiceJspBean extends InsertServiceJspBean imple
         String strDocumentListId = request.getParameter( PARAMETER_DOCUMENT_LIST_ID );
         strDocumentListId = ( strDocumentListId != null ) ? strDocumentListId : CONSTANT_STRING_ZERO;
 
-        int nDocumentListId = Integer.parseInt( strDocumentListId );
+        int nDocumentCategoryId = Integer.parseInt( strDocumentListId );
 
         // get template from request
         String strTemplateId = request.getParameter( PARAMETER_TEMPLATE_ID );
@@ -154,8 +158,8 @@ public class NewsletterDocumentServiceJspBean extends InsertServiceJspBean imple
         model.put( BOOKMARK_START_PUBLISHED_DATE, strPublishedDate );
 
         // Document list
-        Collection<Document> list = NewsletterDocumentHome.findDocumentsByDateAndList( nDocumentListId, publishedDate,
-                pluginDocument );
+        Collection<Document> list = NewsletterDocumentHome.findDocumentsByDateAndCategory( nDocumentCategoryId,
+                publishedDate, pluginDocument );
         model.put( MARK_DOCUMENT_LIST, list );
 
         ReferenceList templateList = NewsLetterTemplateHome.getTemplatesListByType(
@@ -211,7 +215,6 @@ public class NewsletterDocumentServiceJspBean extends InsertServiceJspBean imple
         int nTemplateId = Integer.parseInt( strTemplateId );
         String[] strDocumentsIdsList = request.getParameterValues( PARAMETER_DOCUMENTS_LIST );
 
-
         if ( ( strDocumentsIdsList == null ) )
         {
             return AdminMessageService.getMessageUrl( request, MESSAGE_NO_DOCUMENT_CHOSEN, AdminMessage.TYPE_STOP );
@@ -232,11 +235,22 @@ public class NewsletterDocumentServiceJspBean extends InsertServiceJspBean imple
             documentsList.add( strDocumentHtmlCode );
         }
 
-        model.put( NewsLetterConstants.MARK_DOCUMENTS_LIST, documentsList );
+        model.put( MARK_DOCUMENTS_LIST, documentsList );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_INSERT_DOCEMENTS, locale, model );
         template.substitute( NewsLetterConstants.WEBAPP_PATH_FOR_LINKSERVICE, strBaseUrl );
 
-        return insertUrl( request, strInput, StringEscapeUtils.escapeJavaScript( template.getHtml( ) ) );
+        String strContent = template.getHtml( );
+
+        // We check if we need to unsecure files of the document to include them as links in the content
+        if ( _newsletterService.useUnsecuredImages( ) )
+        {
+            String strUnsecuredFolder = _newsletterService.getUnsecuredImagefolder( );
+            String strUnsecuredFolderPath = _newsletterService.getUnsecuredFolderPath( );
+            strContent = NewsletterDocumentUtils.rewriteImgUrls( strContent, AppPathService.getBaseUrl( ),
+                    _newsletterService.getUnsecuredWebappUrl( ), strUnsecuredFolderPath, strUnsecuredFolder );
+        }
+
+        return insertUrl( request, strInput, StringEscapeUtils.escapeJavaScript( strContent ) );
     }
 }

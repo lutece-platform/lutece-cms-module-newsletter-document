@@ -19,13 +19,14 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
     private static final String SQL_QUERY_SELECT_NEWSLETTER_DOCUMENT_SECTION = " SELECT id_section, id_template FROM newsletter_document_section WHERE id_section = ? ";
     private static final String SQL_QUERY_INSERT_NEWSLETTER_DOCUMENT_SECTION = " INSERT INTO newsletter_document_section(id_section, id_template) VALUES (?,?) ";
     private static final String SQL_QUERY_UPDATE_NEWSLETTER_DOCUMENT_SECTION = " UPDATE newsletter_document_section SET id_template = ? WHERE id_section = ? ";
-    private static final String SQL_QUERY_DELETE_NEWSLETTER_DOCUMENT_SECTION = " DELETE FROM WHERE id_section = ? ";
+    private static final String SQL_QUERY_DELETE_NEWSLETTER_DOCUMENT_SECTION = " DELETE FROM newsletter_document_section WHERE id_section = ? ";
 
     private static final String SQL_QUERY_SELECT_DOCUMENT_BY_DATE_AND_LIST_DOCUMENT = "SELECT DISTINCT a.id_document , a.code_document_type, a.date_creation , a.date_modification, a.title, a.document_summary FROM document a INNER JOIN document_published b ON a.id_document=b.id_document INNER JOIN core_portlet c ON b.id_portlet=c.id_portlet WHERE c.id_portlet_type='DOCUMENT_LIST_PORTLET' ";
     private static final String SQL_QUERY_DOCUMENT_TYPE_PORTLET = " SELECT DISTINCT id_portlet , name FROM core_portlet WHERE id_portlet_type='DOCUMENT_LIST_PORTLET'  ";
-    private static final String SQL_QUERY_ASSOCIATE_NEWSLETTER_CATEGORY_LIST = "INSERT INTO newsletter_category_list ( id_newsletter , id_category_list ) VALUES ( ?, ? ) ";
+    private static final String SQL_QUERY_ASSOCIATE_NEWSLETTER_CATEGORY_LIST = "INSERT INTO newsletter_document_category ( id_section , id_category ) VALUES ( ?, ? ) ";
     private static final String SQL_QUERY_SELECTALL_ID_DOCUMENT = " SELECT a.id_document FROM document_category_link a WHERE a.id_category = ? ";
-    private static final String SQL_QUERY_DELETE_NEWSLETTER_CATEGORY_LIST = "DELETE FROM newsletter_category_list WHERE id_newsletter = ?";
+    private static final String SQL_QUERY_DELETE_NEWSLETTER_CATEGORY_LIST = "DELETE FROM newsletter_document_category WHERE id_section = ?";
+    private static final String SQL_QUERY_SELECT_NEWSLETTER_CATEGORY_IDS = "SELECT DISTINCT id_category FROM newsletter_document_category WHERE id_section = ?";
     private static final String SQL_FILTER_DATE_MODIF = " a.date_modification >=? ";
     private static final String SQL_FILTER_ID_PORTLET = " c.id_portlet = ? ";
 
@@ -36,15 +37,15 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
      * {@inheritDoc}
      */
     @Override
-    public NewsletterDocumentSection findByPrimaryKey( int nIdSection, Plugin plugin )
+    public NewsletterDocument findByPrimaryKey( int nIdSection, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_NEWSLETTER_DOCUMENT_SECTION, plugin );
         daoUtil.setInt( 1, nIdSection );
         daoUtil.executeQuery( );
-        NewsletterDocumentSection section = null;
+        NewsletterDocument section = null;
         if ( daoUtil.next( ) )
         {
-            section = new NewsletterDocumentSection( );
+            section = new NewsletterDocument( );
             section.setId( daoUtil.getInt( 1 ) );
             section.setIdTemplate( daoUtil.getInt( 2 ) );
         }
@@ -56,7 +57,7 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
      * {@inheritDoc}
      */
     @Override
-    public void updateDocumentSection( NewsletterDocumentSection section, Plugin plugin )
+    public void updateDocumentSection( NewsletterDocument section, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_NEWSLETTER_DOCUMENT_SECTION, plugin );
         daoUtil.setInt( 1, section.getIdTemplate( ) );
@@ -81,7 +82,7 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
      * {@inheritDoc}
      */
     @Override
-    public void createDocumentSection( NewsletterDocumentSection section, Plugin plugin )
+    public void createDocumentSection( NewsletterDocument section, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_NEWSLETTER_DOCUMENT_SECTION, plugin );
         daoUtil.setInt( 1, section.getId( ) );
@@ -94,7 +95,7 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
      * {@inheritDoc}
      */
     @Override
-    public Collection<Document> selectDocumentsByDateAndList( int nPortletId, Timestamp dateLastSending, Plugin plugin )
+    public Collection<Document> selectDocumentsByDateAndCategory( int nPortletId, Timestamp dateLastSending, Plugin plugin )
     {
         StringBuilder sbSql = new StringBuilder( SQL_QUERY_SELECT_DOCUMENT_BY_DATE_AND_LIST_DOCUMENT );
 
@@ -161,58 +162,92 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
      * {@inheritDoc}
      */
     @Override
-    public void associateNewsLetterDocumentList( int nNewsLetterId, int nDocumentListId, Plugin plugin )
+    public void associateNewsLetterDocumentList( int nSectionId, int nDocumentCategoryId, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_ASSOCIATE_NEWSLETTER_CATEGORY_LIST, plugin );
-        daoUtil.setInt( 1, nNewsLetterId );
-        daoUtil.setInt( 2, nDocumentListId );
+        daoUtil.setInt( 1, nSectionId );
+        daoUtil.setInt( 2, nDocumentCategoryId );
 
         daoUtil.executeUpdate( );
         daoUtil.free( );
     }
 
+    //    /**
+    //     * Select a list of Id Documents for a specified category
+    //     * @param nIdCategory The category name
+    //     * @return The array of Id Document
+    //     */
+    //    public int[] selectAllIdDocument( int nIdCategory )
+    //    {
+    //        Collection<Integer> listIdDocument = new ArrayList<Integer>( );
+    //        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_DOCUMENT );
+    //        daoUtil.setInt( 1, nIdCategory );
+    //        daoUtil.executeQuery( );
+    //
+    //        while ( daoUtil.next( ) )
+    //        {
+    //            listIdDocument.add( daoUtil.getInt( 1 ) );
+    //        }
+    //
+    //        daoUtil.free( );
+    //
+    //        // Convert ArrayList to Int[]
+    //        int[] arrayIdDocument = new int[listIdDocument.size( )];
+    //        int i = 0;
+    //
+    //        for ( Integer nIdDocument : listIdDocument )
+    //        {
+    //            arrayIdDocument[i++] = nIdDocument.intValue( );
+    //        }
+    //
+    //        return arrayIdDocument;
+    //    }
+
     /**
-     * Select a list of Id Documents for a specified category
-     * @param nIdCategory The category name
-     * @return The array of Id Document
+     * {@inheritDoc}
      */
-    public int[] selectAllIdDocument( int nIdCategory )
+    @Override
+    public void deleteNewsLetterDocumentList( int nSectionId, Plugin plugin )
     {
-        Collection<Integer> listIdDocument = new ArrayList<Integer>( );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_DOCUMENT );
-        daoUtil.setInt( 1, nIdCategory );
-        daoUtil.executeQuery( );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_NEWSLETTER_CATEGORY_LIST, plugin );
 
-        while ( daoUtil.next( ) )
-        {
-            listIdDocument.add( daoUtil.getInt( 1 ) );
-        }
+        daoUtil.setInt( 1, nSectionId );
 
+        daoUtil.executeUpdate( );
         daoUtil.free( );
-
-        // Convert ArrayList to Int[]
-        int[] arrayIdDocument = new int[listIdDocument.size( )];
-        int i = 0;
-
-        for ( Integer nIdDocument : listIdDocument )
-        {
-            arrayIdDocument[i++] = nIdDocument.intValue( );
-        }
-
-        return arrayIdDocument;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void deleteNewsLetterDocumentList( int nNewsLetterId, Plugin plugin )
+    public int[] selectNewsletterCategoryIds( int nSectionId, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_NEWSLETTER_CATEGORY_LIST, plugin );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_NEWSLETTER_CATEGORY_IDS, plugin );
 
-        daoUtil.setInt( 1, nNewsLetterId );
+        daoUtil.setInt( 1, nSectionId );
 
-        daoUtil.executeUpdate( );
+        daoUtil.executeQuery( );
+
+        List<Integer> list = new ArrayList<Integer>( );
+
+        while ( daoUtil.next( ) )
+        {
+            int nResultId = daoUtil.getInt( 1 );
+            list.add( new Integer( nResultId ) );
+        }
+
+        int[] nIdsArray = new int[list.size( )];
+
+        for ( int i = 0; i < list.size( ); i++ )
+        {
+            Integer nId = list.get( i );
+            nIdsArray[i] = nId.intValue( );
+        }
+
         daoUtil.free( );
+
+        return nIdsArray;
     }
+
 }

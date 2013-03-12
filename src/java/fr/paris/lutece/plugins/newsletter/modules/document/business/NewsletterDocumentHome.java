@@ -9,7 +9,6 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceList;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Collection;
 
 
@@ -32,7 +31,7 @@ public class NewsletterDocumentHome
      * @param plugin The plugin
      * @return The section, or null if no section was found
      */
-    public static NewsletterDocumentSection findByPrimaryKey( int nIdSection, Plugin plugin )
+    public static NewsletterDocument findByPrimaryKey( int nIdSection, Plugin plugin )
     {
         return _dao.findByPrimaryKey( nIdSection, plugin );
     }
@@ -42,7 +41,7 @@ public class NewsletterDocumentHome
      * @param section The section to update
      * @param plugin The plugin
      */
-    public static void updateDocumentSection( NewsletterDocumentSection section, Plugin plugin )
+    public static void updateDocumentSection( NewsletterDocument section, Plugin plugin )
     {
         _dao.updateDocumentSection( section, plugin );
     }
@@ -62,23 +61,23 @@ public class NewsletterDocumentHome
      * @param section The newsletter document section to insert
      * @param plugin the plugin
      */
-    public static void createDocumentSection( NewsletterDocumentSection section, Plugin plugin )
+    public static void createDocumentSection( NewsletterDocument section, Plugin plugin )
     {
         _dao.createDocumentSection( section, plugin );
     }
 
     /**
      * Returns the list of documents published by date and by topic
-     * 
-     * @param nDocumentListId the list identifier
+     * @param nDocumentCategoryId the id of the category
      * @param dtDernierEnvoi the date of the last sending
      * @param plugin The plugin
      * @return a collection of document
      */
-    public static Collection<Document> findDocumentsByDateAndList( int nDocumentListId, Timestamp dtDernierEnvoi,
+    public static Collection<Document> findDocumentsByDateAndCategory( int nDocumentCategoryId,
+            Timestamp dtDernierEnvoi,
             Plugin plugin )
     {
-        return _dao.selectDocumentsByDateAndList( nDocumentListId, dtDernierEnvoi, plugin );
+        return _dao.selectDocumentsByDateAndCategory( nDocumentCategoryId, dtDernierEnvoi, plugin );
     }
 
     /**
@@ -89,8 +88,7 @@ public class NewsletterDocumentHome
     public static ReferenceList getAllCategories( AdminUser user )
     {
         ReferenceList list = new ReferenceList( );
-        Collection<CategoryDisplay> listCategoriesDisplay = new ArrayList<CategoryDisplay>( );
-        listCategoriesDisplay = CategoryService.getAllCategoriesDisplay( user );
+        Collection<CategoryDisplay> listCategoriesDisplay = CategoryService.getAllCategoriesDisplay( user );
 
         for ( CategoryDisplay category : listCategoriesDisplay )
         {
@@ -112,24 +110,33 @@ public class NewsletterDocumentHome
 
     /**
      * Associate a topic to a newsletter
-     * 
-     * @param nNewsLetterId the newsletter identifier
-     * @param nDocumentListId the topic identifier
+     * @param nSectionId the section identifier
+     * @param nDocumentCategoryId the id of the document category to associate
      * @param plugin the Plugin
      */
-    public static void associateNewsLetterDocumentList( int nNewsLetterId, int nDocumentListId, Plugin plugin )
+    public static void associateNewsLetterDocumentList( int nSectionId, int nDocumentCategoryId, Plugin plugin )
     {
-        _dao.associateNewsLetterDocumentList( nNewsLetterId, nDocumentListId, plugin );
+        _dao.associateNewsLetterDocumentList( nSectionId, nDocumentCategoryId, plugin );
     }
 
     /**
      * Removes the relationship between a list of topics and a newsletter
-     * 
      * @param nNewsLetterId the newsletter identifier
      * @param plugin the Plugin
      */
     public static void removeNewsLetterDocumentList( int nNewsLetterId, Plugin plugin )
     {
         _dao.deleteNewsLetterDocumentList( nNewsLetterId, plugin );
+    }
+
+    /**
+     * loads the list of categories of the newsletter
+     * @param nSectionId the section identifier
+     * @param plugin the plugin
+     * @return the array of categories id
+     */
+    public static int[] findNewsletterCategoryIds( int nSectionId, Plugin plugin )
+    {
+        return _dao.selectNewsletterCategoryIds( nSectionId, plugin );
     }
 }

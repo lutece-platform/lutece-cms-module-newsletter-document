@@ -20,14 +20,14 @@ public interface INewsletterDocumentDAO
      * @param plugin The plugin
      * @return The section, or null if no section was found
      */
-    NewsletterDocumentSection findByPrimaryKey( int nIdSection, Plugin plugin );
+    NewsletterDocument findByPrimaryKey( int nIdSection, Plugin plugin );
 
     /**
      * Update a newsletter document section
      * @param section The section to update
      * @param plugin The plugin
      */
-    void updateDocumentSection( NewsletterDocumentSection section, Plugin plugin );
+    void updateDocumentSection( NewsletterDocument section, Plugin plugin );
 
     /**
      * Remove a newsletter document section from the database
@@ -41,7 +41,7 @@ public interface INewsletterDocumentDAO
      * @param section The newsletter document section to insert
      * @param plugin the plugin
      */
-    void createDocumentSection( NewsletterDocumentSection section, Plugin plugin );
+    void createDocumentSection( NewsletterDocument section, Plugin plugin );
 
     /**
      * Select the list of documents published since the last sending of the
@@ -51,7 +51,7 @@ public interface INewsletterDocumentDAO
      * @param dateLastSending the date of the last newsletter sending
      * @param plugin the Plugin
      */
-    Collection<Document> selectDocumentsByDateAndList( int nCategoryId, Timestamp dateLastSending, Plugin plugin );
+    Collection<Document> selectDocumentsByDateAndCategory( int nCategoryId, Timestamp dateLastSending, Plugin plugin );
 
     /**
      * Returns the list of the portlets which are document portlets
@@ -62,18 +62,25 @@ public interface INewsletterDocumentDAO
 
     /**
      * Associate a new topic to a newsletter
-     * 
-     * @param nNewsLetterId the newsletter identifier
-     * @param nDocumentListId the topic identifier
+     * @param nSectionId the section id
+     * @param nDocumentCategoryId the topic identifier
      * @param plugin the Plugin
      */
-    void associateNewsLetterDocumentList( int nNewsLetterId, int nDocumentListId, Plugin plugin );
+    void associateNewsLetterDocumentList( int nSectionId, int nDocumentCategoryId, Plugin plugin );
 
     /**
      * Remove the relationship between a newsletter and the list of documents
-     * 
-     * @param nNewsLetterId the newsletter identifier
+     * @param nSectionId the section id
      * @param plugin the Plugin
      */
-    void deleteNewsLetterDocumentList( int nNewsLetterId, Plugin plugin );
+    void deleteNewsLetterDocumentList( int nSectionId, Plugin plugin );
+
+    /**
+     * loads the list of categories linked to the newsletter
+     * @param nSectionId the section id
+     * @param plugin the plugin
+     * @return the array of categories id
+     */
+    int[] selectNewsletterCategoryIds( int nSectionId, Plugin plugin );
+
 }

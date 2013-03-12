@@ -4,9 +4,10 @@ import fr.paris.lutece.plugins.document.business.Document;
 import fr.paris.lutece.plugins.document.business.DocumentFilter;
 import fr.paris.lutece.plugins.document.business.attributes.DocumentAttribute;
 import fr.paris.lutece.plugins.document.service.publishing.PublishingService;
-import fr.paris.lutece.plugins.newsletter.business.NewsLetter;
-import fr.paris.lutece.plugins.newsletter.business.NewsLetterHome;
+import fr.paris.lutece.plugins.newsletter.modules.document.business.NewsletterDocumentHome;
+import fr.paris.lutece.plugins.newsletter.modules.document.util.NewsletterDocumentUtils;
 import fr.paris.lutece.plugins.newsletter.service.NewsletterPlugin;
+import fr.paris.lutece.plugins.newsletter.service.NewsletterService;
 import fr.paris.lutece.plugins.newsletter.util.NewsLetterConstants;
 import fr.paris.lutece.plugins.newsletter.util.NewsletterUtils;
 import fr.paris.lutece.portal.business.portlet.Portlet;
@@ -16,13 +17,12 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.portlet.PortletService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppLogService;
-import fr.paris.lutece.portal.service.util.AppPathService;
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.html.HtmlTemplate;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -41,14 +41,12 @@ public class NewsletterDocumentService
 {
     private static final String FULLSTOP = ".";
 
-    private static final String PROPERTY_WEBAPP_URL = "newsletter.webapp.url";
-    private static final String PROPERTY_WEBAPP_PATH = "newsletter.webapp.path";
-    private static final String PROPERTY_NO_SECURED_IMG_FOLDER = "newsletter.nosecured.img.folder.name";
-    private static final String PROPERTY_NO_SECURED_IMG_OPTION = "newsletter.nosecured.img.option";
-
     private static final String MARK_IMG_PATH = "img_path";
+    private static final String MARK_DOCUMENT_PORTLETS_COLLEC = "portlets_collec";
+    private static final String MARK_DOCUMENT = "document";
 
     private static NewsletterDocumentService _singleton = new NewsletterDocumentService( );
+    private NewsletterService _newsletterService = NewsletterService.getService( );
 
     /**
      * Returns the instance of the singleton
@@ -60,7 +58,7 @@ public class NewsletterDocumentService
     }
 
     /**
-     * copy specified document's type file into a given folder
+     * Copy specified document's type file into a given folder
      * @param document the document
      * @param strFileType the file type
      * @param strDestFolderPath the destination folder
@@ -78,8 +76,9 @@ public class NewsletterDocumentService
             {
                 byte[] tabByte = documentAttribute.getBinaryValue( );
                 // fileName is composed from documentID+ documentAttributeId + documentAttributeOrder + "." + fileExtension
-                strFileName = String.valueOf( document.getId( ) ) + String.valueOf( documentAttribute.getId( ) )
-                        + String.valueOf( documentAttribute.getAttributeOrder( ) ) + FULLSTOP
+                strFileName = NewsletterDocumentUtils.formatInteger( document.getId( ), 5 )
+                        + NewsletterDocumentUtils.formatInteger( documentAttribute.getId( ), 5 )
+                        + NewsletterDocumentUtils.formatInteger( documentAttribute.getAttributeOrder( ), 5 ) + FULLSTOP
                         + StringUtils.substringAfterLast( documentAttribute.getTextValue( ), FULLSTOP );
 
                 FileOutputStream fos = null;
@@ -112,22 +111,22 @@ public class NewsletterDocumentService
 
     /**
      * Generate the html code for documents corresponding to the documents
-     * associated with the newsletter and to the date of the
-     * last sending of the newsletter
-     * @param nNewsLetterId the newsletter associated to categories
+     * associated with the section and to a given publishing date
+     * @param nSectionId the section to generate
      * @param nTemplateId the document id to use
+     * @param datePublishing minimum date of publishing of documents. Documents
+     *            published before this date will not be considered
      * @param strBaseUrl the url of the portal
      * @param user The current admin user
      * @param locale The locale
      * @return the html code for the document list of null if no document
      *         template available
      */
-    public String generateDocumentsList( int nNewsLetterId, int nTemplateId, String strBaseUrl, AdminUser user,
-            Locale locale )
+    public String generateDocumentsList( int nSectionId, int nTemplateId, Timestamp datePublishing, String strBaseUrl,
+            AdminUser user, Locale locale )
     {
         Plugin pluginNewsLetter = PluginService.getPlugin( NewsletterPlugin.PLUGIN_NAME );
-        NewsLetter newsletter = NewsLetterHome.findByPrimaryKey( nNewsLetterId, pluginNewsLetter );
-        int[] arrayCategoriesIds = NewsLetterHome.findNewsletterCategoryIds( nNewsLetterId, pluginNewsLetter );
+        int[] arrayCategoriesIds = NewsletterDocumentHome.findNewsletterCategoryIds( nSectionId, pluginNewsLetter );
         String strTemplatePath = NewsletterUtils.getHtmlTemplatePath( nTemplateId, pluginNewsLetter );
 
         if ( strTemplatePath == null )
@@ -143,15 +142,14 @@ public class NewsletterDocumentService
         }
 
         Collection<Document> listDocuments = PublishingService.getInstance( ).getPublishedDocumentsSinceDate(
-                newsletter.getDateLastSending( ), documentFilter, locale );
+                datePublishing, documentFilter, locale );
 
         StringBuffer sbDocumentLists = new StringBuffer( );
 
         // get html from templates
         for ( Document document : listDocuments )
         {
-            String strContent = fillTemplateWithDocumentInfos( strTemplatePath, document,
-                    locale, strBaseUrl, user );
+            String strContent = fillTemplateWithDocumentInfos( strTemplatePath, document, locale, strBaseUrl, user );
             sbDocumentLists.append( strContent );
         }
 
@@ -160,7 +158,6 @@ public class NewsletterDocumentService
 
     /**
      * Fills a given document template with the document data
-     * 
      * @return the html code corresponding to the document data
      * @param strBaseUrl The base url of the portal
      * @param strTemplatePath The path of the template file
@@ -179,31 +176,23 @@ public class NewsletterDocumentService
         {
             //the document insert in the buffer must be publish in a authorized portlet
             Map<String, Object> model = new HashMap<String, Object>( );
-            model.put( NewsLetterConstants.MARK_DOCUMENT, document );
+            model.put( MARK_DOCUMENT, document );
 
             // if noSecuredImg is true, it will copy all document's picture in a no secured folder
-            String strNoSecuredImg = AppPropertiesService.getProperty( PROPERTY_NO_SECURED_IMG_OPTION );
-
-            if ( ( strNoSecuredImg != null ) && strNoSecuredImg.equalsIgnoreCase( Boolean.TRUE.toString( ) ) )
+            if ( _newsletterService.useUnsecuredImages( ) )
             {
-                String strImgFolder = AppPropertiesService.getProperty( PROPERTY_NO_SECURED_IMG_FOLDER )
-                        + NewsLetterConstants.CONSTANT_SLASH;
-                String pictureName = NewsletterDocumentService.getInstance( ).copyFileFromDocument(
-                        document,
+                String strImgFolder = _newsletterService.getUnsecuredImagefolder( );
+                String pictureName = NewsletterDocumentService.getInstance( ).copyFileFromDocument( document,
                         NewsLetterConstants.CONSTANT_IMG_FILE_TYPE,
-                        AppPropertiesService.getProperty( PROPERTY_WEBAPP_PATH, AppPathService.getWebAppPath( )
-                                + NewsLetterConstants.CONSTANT_SLASH )
-                                + strImgFolder );
-
+                        _newsletterService.getUnsecuredFolderPath( ) + strImgFolder );
                 if ( pictureName != null )
                 {
-                    model.put( MARK_IMG_PATH, AppPropertiesService.getProperty( PROPERTY_WEBAPP_URL, strBaseUrl )
-                            + strImgFolder + pictureName );
+                    model.put( MARK_IMG_PATH, _newsletterService.getUnsecuredWebappUrl( ) + strImgFolder + pictureName );
                 }
             }
 
             model.put( NewsLetterConstants.MARK_BASE_URL, strBaseUrl );
-            model.put( NewsLetterConstants.MARK_DOCUMENT_PORTLETS_COLLEC, porletCollec );
+            model.put( MARK_DOCUMENT_PORTLETS_COLLEC, porletCollec );
 
             HtmlTemplate template = AppTemplateService.getTemplate( strTemplatePath, locale, model );
 
@@ -211,5 +200,4 @@ public class NewsletterDocumentService
         }
         return StringUtils.EMPTY;
     }
-
 }

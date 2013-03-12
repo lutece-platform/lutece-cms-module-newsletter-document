@@ -1,36 +1,25 @@
 package fr.paris.lutece.plugins.newsletter.modules.document.util;
 
+import org.apache.commons.lang.StringUtils;
 
 
 /**
- * @author vbroussard
- * 
+ * Utility class for newsletter document
  */
 public class NewsletterDocumentUtils
 {
+    private static final String CONSTANT_ZERO = "0";
 
     /**
-     * Rewrite relatives url to absolutes urls
-     * 
-     * @param strContent The content to analyze
-     * @param strBaseUrl The base url
-     * @return The converted content
+     * Private constructor
      */
-    public static String rewriteUrls( String strContent, String strBaseUrl )
+    private NewsletterDocumentUtils( )
     {
-        HtmlDocumentNewsletter doc = new HtmlDocumentNewsletter( strContent, strBaseUrl );
-        doc.convertAllRelativesUrls( HtmlDocumentNewsletter.ELEMENT_IMG );
-        doc.convertAllRelativesUrls( HtmlDocumentNewsletter.ELEMENT_A );
-        doc.convertAllRelativesUrls( HtmlDocumentNewsletter.ELEMENT_FORM );
-        doc.convertAllRelativesUrls( HtmlDocumentNewsletter.ELEMENT_CSS );
-        doc.convertAllRelativesUrls( HtmlDocumentNewsletter.ELEMENT_JAVASCRIPT );
 
-        return doc.getContent( );
     }
 
     /**
-     * Rewrite secured omg urls to absolutes urls
-     * 
+     * Rewrite secured img urls to absolutes urls
      * @param strContent The content to analyze
      * @param strBaseUrl The base url
      * @param strUnsecuredBaseUrl The unsecured base URL
@@ -41,12 +30,41 @@ public class NewsletterDocumentUtils
     public static String rewriteImgUrls( String strContent, String strBaseUrl, String strUnsecuredBaseUrl,
             String strUnsecuredFolderPath, String strUnsecuredFolder )
     {
-        HtmlDocumentNewsletter doc = new HtmlDocumentNewsletter( strContent, strBaseUrl );
-        doc.convertUrlsToUnsecuredUrls( HtmlDocumentNewsletter.ELEMENT_IMG, strUnsecuredBaseUrl,
+        if ( strContent == null )
+        {
+            return StringUtils.EMPTY;
+        }
+        HtmlDomDocNewsletterDocument doc = new HtmlDomDocNewsletterDocument( strContent, strBaseUrl );
+        doc.convertUrlsToUnsecuredUrls( HtmlDomDocNewsletterDocument.ELEMENT_IMG, strUnsecuredBaseUrl,
                 strUnsecuredFolderPath, strUnsecuredFolder );
-        doc.convertUrlsToUnsecuredUrls( HtmlDocumentNewsletter.ELEMENT_A, strUnsecuredBaseUrl, strUnsecuredFolderPath,
-                strUnsecuredFolder );
+        doc.convertUrlsToUnsecuredUrls( HtmlDomDocNewsletterDocument.ELEMENT_A, strUnsecuredBaseUrl,
+                strUnsecuredFolderPath, strUnsecuredFolder );
 
         return doc.getContent( );
+    }
+
+    /**
+     * Get the string representation of an integer with a specified number of
+     * digits.
+     * @param nNbToformat The number to format
+     * @param nNbDigits The number of digits to add
+     * @return The string representing the integer
+     */
+    public static String formatInteger( int nNbToformat, int nNbDigits )
+    {
+        String strNumber = Integer.toString( nNbToformat );
+        if ( strNumber.length( ) > nNbDigits )
+        {
+            return strNumber;
+        }
+        StringBuffer sbNumber = new StringBuffer( nNbDigits );
+        int i = strNumber.length( );
+        while ( i < nNbDigits )
+        {
+            sbNumber.append( CONSTANT_ZERO );
+            i++;
+        }
+        sbNumber.append( strNumber );
+        return sbNumber.toString( );
     }
 }
