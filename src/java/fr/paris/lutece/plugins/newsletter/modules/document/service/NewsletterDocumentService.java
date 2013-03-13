@@ -88,7 +88,10 @@ public class NewsletterDocumentService
                     File file = new File( strDestFolderPath );
                     if ( !file.exists( ) )
                     {
-                        file.mkdir( );
+                        if ( !file.mkdir( ) )
+                        {
+                            throw new IOException( );
+                        }
                     }
 
                     file = new File( strDestFolderPath + strFileName );
