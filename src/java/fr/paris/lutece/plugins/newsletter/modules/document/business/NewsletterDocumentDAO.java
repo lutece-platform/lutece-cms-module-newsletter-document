@@ -112,7 +112,7 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
         daoUtil.setTimestamp( nIndex++, dateLastSending );
         if ( nPortletId > 0 )
         {
-            daoUtil.setInt( nIndex++, nPortletId );
+            daoUtil.setInt( nIndex, nPortletId );
         }
 
         daoUtil.executeQuery( );
@@ -202,7 +202,7 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
         while ( daoUtil.next( ) )
         {
             int nResultId = daoUtil.getInt( 1 );
-            list.add( new Integer( nResultId ) );
+            list.add( Integer.valueOf( nResultId ) );
         }
 
         int[] nIdsArray = new int[list.size( )];

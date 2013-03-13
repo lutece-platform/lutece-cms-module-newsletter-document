@@ -80,14 +80,14 @@ import org.apache.commons.lang.StringUtils;
 public class NewsletterDocumentServiceJspBean extends InsertServiceJspBean implements InsertServiceSelectionBean
 {
     /**
-     * Serial UID
-     */
-    private static final long serialVersionUID = -4095074358460689539L;
-
-    /**
      * The newsletter right needed to manage
      */
     public static final String RIGHT_NEWSLETTER_MANAGEMENT = "NEWSLETTER_MANAGEMENT";
+
+    /**
+     * Serial version UID
+     */
+    private static final long serialVersionUID = -4095074358460689539L;
 
     // templates
     private static final String TEMPLATE_SELECT_DOCUMENTS = "admin/plugins/newsletter/modules/document/select_documents.html";

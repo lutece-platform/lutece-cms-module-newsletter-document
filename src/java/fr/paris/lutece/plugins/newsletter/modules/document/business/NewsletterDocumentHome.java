@@ -15,12 +15,14 @@ import java.util.Collection;
 /**
  * Home for newsletter document
  */
-public class NewsletterDocumentHome
+public final class NewsletterDocumentHome
 {
     private static INewsletterDocumentDAO _dao = SpringContextService
             .getBean( "newsletter-document.newsletterDocumentDAO" );
 
-    // Private constructor
+    /**
+     * Private constructor
+     */
     private NewsletterDocumentHome( )
     {
     }
@@ -74,8 +76,7 @@ public class NewsletterDocumentHome
      * @return a collection of document
      */
     public static Collection<Document> findDocumentsByDateAndCategory( int nDocumentCategoryId,
-            Timestamp dtDernierEnvoi,
-            Plugin plugin )
+            Timestamp dtDernierEnvoi, Plugin plugin )
     {
         return _dao.selectDocumentsByDateAndCategory( nDocumentCategoryId, dtDernierEnvoi, plugin );
     }

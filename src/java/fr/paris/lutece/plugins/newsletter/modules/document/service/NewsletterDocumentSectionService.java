@@ -220,15 +220,6 @@ public class NewsletterDocumentSectionService implements INewsletterSectionServi
         return strContent;
     }
 
-    private Plugin getNewsletterDocumentPlugin( )
-    {
-        if ( _newsletterDocumentPlugin == null )
-        {
-            _newsletterDocumentPlugin = PluginService.getPlugin( NewsletterDocumentPlugin.PLUGIN_NAME );
-        }
-        return _newsletterDocumentPlugin;
-    }
-
     /**
      * Get the newsletter service instance of this service
      * @return The newsletter service of this service
@@ -243,8 +234,21 @@ public class NewsletterDocumentSectionService implements INewsletterSectionServi
     }
 
     /**
-     * Get the newsletter section service instance of this service
-     * @return The newsletter section service of this service
+     * Get the newsletter document plugin
+     * @return The newsletter document plugin
+     */
+    private Plugin getNewsletterDocumentPlugin( )
+    {
+        if ( _newsletterDocumentPlugin == null )
+        {
+            _newsletterDocumentPlugin = PluginService.getPlugin( NewsletterDocumentPlugin.PLUGIN_NAME );
+        }
+        return _newsletterDocumentPlugin;
+    }
+
+    /**
+     * Get the newsletter plugin
+     * @return The newsletter plugin
      */
     private Plugin getNewsletterPlugin( )
     {

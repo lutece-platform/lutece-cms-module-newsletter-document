@@ -6,7 +6,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * Utility class for newsletter document
  */
-public class NewsletterDocumentUtils
+public final class NewsletterDocumentUtils
 {
     private static final String CONSTANT_ZERO = "0";
 

@@ -85,9 +85,13 @@ public class NewsletterDocumentService
 
                 try
                 {
-                    new File( strDestFolderPath ).mkdir( );
+                    File file = new File( strDestFolderPath );
+                    if ( !file.exists( ) )
+                    {
+                        file.mkdir( );
+                    }
 
-                    File file = new File( strDestFolderPath + strFileName );
+                    file = new File( strDestFolderPath + strFileName );
                     fos = new FileOutputStream( file );
                     IOUtils.write( tabByte, fos );
                 }
