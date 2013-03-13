@@ -11,7 +11,7 @@
     <artifactId>module-newsletter-document</artifactId>
     <packaging>lutece-plugin</packaging>
     <version>1.0.0-SNAPSHOT</version>
-    <name>Lutece newsletter plugin</name>
+    <name>Module newsletter document</name>
     
     <repositories>
 		<repository>

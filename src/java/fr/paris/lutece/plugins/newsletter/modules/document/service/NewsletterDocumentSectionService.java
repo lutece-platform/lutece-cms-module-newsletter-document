@@ -103,7 +103,7 @@ public class NewsletterDocumentSectionService implements INewsletterSectionServi
         int[] arrayCategoryListIds = NewsletterDocumentHome.findNewsletterCategoryIds( newsletterSection.getId( ),
                 getNewsletterDocumentPlugin( ) );
 
-        // We get the list of categories avaiable for this section type
+        // We get the list of categories available for this section type
         ReferenceList listCategoryList = NewsletterDocumentHome.getAllCategories( user );
         listCategoryList.addItem( CONSTANT_UNCATEGORIZED_DOCUMENTS_KEY,
                 I18nService.getLocalizedString( LABEL_MODIFY_UNCATEGORIZED_DOCUMENTS, locale ) );
