@@ -4,5 +4,5 @@
 <beans>
 	<bean id="newsletter-document.newsletterDocumentDAO" class="fr.paris.lutece.plugins.newsletter.modules.document.business.NewsletterDocumentDAO" />
 	
-	<bean id="newsletter-document.newsletterDocumentSectionService" class="fr.paris.lutece.plugins.newsletter.modules.document.service.NewsletterDocumentSectionService" />
+	<bean id="newsletter-document.newsletterDocumentTopicService" class="fr.paris.lutece.plugins.newsletter.modules.document.service.NewsletterDocumentTopicService" />
 </beans>

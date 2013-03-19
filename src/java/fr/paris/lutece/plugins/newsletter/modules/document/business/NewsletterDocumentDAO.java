@@ -16,17 +16,17 @@ import java.util.List;
  */
 public class NewsletterDocumentDAO implements INewsletterDocumentDAO
 {
-    private static final String SQL_QUERY_SELECT_NEWSLETTER_DOCUMENT_SECTION = " SELECT id_section, id_template FROM newsletter_document_section WHERE id_section = ? ";
-    private static final String SQL_QUERY_INSERT_NEWSLETTER_DOCUMENT_SECTION = " INSERT INTO newsletter_document_section(id_section, id_template) VALUES (?,?) ";
-    private static final String SQL_QUERY_UPDATE_NEWSLETTER_DOCUMENT_SECTION = " UPDATE newsletter_document_section SET id_template = ? WHERE id_section = ? ";
-    private static final String SQL_QUERY_DELETE_NEWSLETTER_DOCUMENT_SECTION = " DELETE FROM newsletter_document_section WHERE id_section = ? ";
+    private static final String SQL_QUERY_SELECT_NEWSLETTER_DOCUMENT_TOPIC = " SELECT id_topic, id_template FROM newsletter_document_topic WHERE id_topic = ? ";
+    private static final String SQL_QUERY_INSERT_NEWSLETTER_DOCUMENT_TOPIC = " INSERT INTO newsletter_document_topic(id_topic, id_template) VALUES (?,?) ";
+    private static final String SQL_QUERY_UPDATE_NEWSLETTER_DOCUMENT_TOPIC = " UPDATE newsletter_document_topic SET id_template = ? WHERE id_topic = ? ";
+    private static final String SQL_QUERY_DELETE_NEWSLETTER_DOCUMENT_TOPIC = " DELETE FROM newsletter_document_topic WHERE id_topic = ? ";
 
     private static final String SQL_QUERY_SELECT_DOCUMENT_BY_DATE_AND_LIST_DOCUMENT = "SELECT DISTINCT a.id_document , a.code_document_type, a.date_creation , a.date_modification, a.title, a.document_summary FROM document a INNER JOIN document_published b ON a.id_document=b.id_document INNER JOIN core_portlet c ON b.id_portlet=c.id_portlet WHERE c.id_portlet_type='DOCUMENT_LIST_PORTLET' ";
     private static final String SQL_QUERY_DOCUMENT_TYPE_PORTLET = " SELECT DISTINCT id_portlet , name FROM core_portlet WHERE id_portlet_type='DOCUMENT_LIST_PORTLET'  ";
-    private static final String SQL_QUERY_ASSOCIATE_NEWSLETTER_CATEGORY_LIST = "INSERT INTO newsletter_document_category ( id_section , id_category ) VALUES ( ?, ? ) ";
-    private static final String SQL_QUERY_DELETE_NEWSLETTER_CATEGORY_LIST = "DELETE FROM newsletter_document_category WHERE id_section = ?";
-    private static final String SQL_QUERY_SELECT_NEWSLETTER_CATEGORY_IDS = "SELECT DISTINCT id_category FROM newsletter_document_category WHERE id_section = ?";
-    private static final String SQL_QUERY_FIND_TEMPLATE = " SELECT count(id_template) FROM newsletter_document_section WHERE id_template = ? ";
+    private static final String SQL_QUERY_ASSOCIATE_NEWSLETTER_CATEGORY_LIST = "INSERT INTO newsletter_document_category ( id_topic , id_category ) VALUES ( ?, ? ) ";
+    private static final String SQL_QUERY_DELETE_NEWSLETTER_CATEGORY_LIST = "DELETE FROM newsletter_document_category WHERE id_topic = ?";
+    private static final String SQL_QUERY_SELECT_NEWSLETTER_CATEGORY_IDS = "SELECT DISTINCT id_category FROM newsletter_document_category WHERE id_topic = ?";
+    private static final String SQL_QUERY_FIND_TEMPLATE = " SELECT count(id_template) FROM newsletter_document_topic WHERE id_template = ? ";
     private static final String SQL_FILTER_DATE_MODIF = " a.date_modification >=? ";
     private static final String SQL_FILTER_ID_PORTLET = " c.id_portlet = ? ";
 
@@ -37,31 +37,31 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
      * {@inheritDoc}
      */
     @Override
-    public NewsletterDocument findByPrimaryKey( int nIdSection, Plugin plugin )
+    public NewsletterDocument findByPrimaryKey( int nIdTopic, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_NEWSLETTER_DOCUMENT_SECTION, plugin );
-        daoUtil.setInt( 1, nIdSection );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_NEWSLETTER_DOCUMENT_TOPIC, plugin );
+        daoUtil.setInt( 1, nIdTopic );
         daoUtil.executeQuery( );
-        NewsletterDocument section = null;
+        NewsletterDocument topic = null;
         if ( daoUtil.next( ) )
         {
-            section = new NewsletterDocument( );
-            section.setId( daoUtil.getInt( 1 ) );
-            section.setIdTemplate( daoUtil.getInt( 2 ) );
+            topic = new NewsletterDocument( );
+            topic.setId( daoUtil.getInt( 1 ) );
+            topic.setIdTemplate( daoUtil.getInt( 2 ) );
         }
         daoUtil.free( );
-        return section;
+        return topic;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void updateDocumentSection( NewsletterDocument section, Plugin plugin )
+    public void updateDocumentTopic( NewsletterDocument topic, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_NEWSLETTER_DOCUMENT_SECTION, plugin );
-        daoUtil.setInt( 1, section.getIdTemplate( ) );
-        daoUtil.setInt( 2, section.getId( ) );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_NEWSLETTER_DOCUMENT_TOPIC, plugin );
+        daoUtil.setInt( 1, topic.getIdTemplate( ) );
+        daoUtil.setInt( 2, topic.getId( ) );
         daoUtil.executeUpdate( );
         daoUtil.free( );
     }
@@ -70,10 +70,10 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
      * {@inheritDoc}
      */
     @Override
-    public void deleteDocumentSection( int nIdSection, Plugin plugin )
+    public void deleteDocumentTopic( int nIdTopic, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_NEWSLETTER_DOCUMENT_SECTION, plugin );
-        daoUtil.setInt( 1, nIdSection );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_NEWSLETTER_DOCUMENT_TOPIC, plugin );
+        daoUtil.setInt( 1, nIdTopic );
         daoUtil.executeUpdate( );
         daoUtil.free( );
     }
@@ -82,11 +82,11 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
      * {@inheritDoc}
      */
     @Override
-    public void createDocumentSection( NewsletterDocument section, Plugin plugin )
+    public void createDocumentTopic( NewsletterDocument topic, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_NEWSLETTER_DOCUMENT_SECTION, plugin );
-        daoUtil.setInt( 1, section.getId( ) );
-        daoUtil.setInt( 2, section.getIdTemplate( ) );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_NEWSLETTER_DOCUMENT_TOPIC, plugin );
+        daoUtil.setInt( 1, topic.getId( ) );
+        daoUtil.setInt( 2, topic.getIdTemplate( ) );
         daoUtil.executeUpdate( );
         daoUtil.free( );
     }
@@ -163,10 +163,10 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
      * {@inheritDoc}
      */
     @Override
-    public void associateNewsLetterDocumentList( int nSectionId, int nDocumentCategoryId, Plugin plugin )
+    public void associateNewsLetterDocumentList( int nTopicId, int nDocumentCategoryId, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_ASSOCIATE_NEWSLETTER_CATEGORY_LIST, plugin );
-        daoUtil.setInt( 1, nSectionId );
+        daoUtil.setInt( 1, nTopicId );
         daoUtil.setInt( 2, nDocumentCategoryId );
 
         daoUtil.executeUpdate( );
@@ -177,11 +177,11 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
      * {@inheritDoc}
      */
     @Override
-    public void deleteNewsLetterDocumentList( int nSectionId, Plugin plugin )
+    public void deleteNewsLetterDocumentList( int nTopicId, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_NEWSLETTER_CATEGORY_LIST, plugin );
 
-        daoUtil.setInt( 1, nSectionId );
+        daoUtil.setInt( 1, nTopicId );
 
         daoUtil.executeUpdate( );
         daoUtil.free( );
@@ -191,11 +191,11 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
      * {@inheritDoc}
      */
     @Override
-    public int[] selectNewsletterCategoryIds( int nSectionId, Plugin plugin )
+    public int[] selectNewsletterCategoryIds( int nTopicId, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_NEWSLETTER_CATEGORY_IDS, plugin );
 
-        daoUtil.setInt( 1, nSectionId );
+        daoUtil.setInt( 1, nTopicId );
 
         daoUtil.executeQuery( );
 

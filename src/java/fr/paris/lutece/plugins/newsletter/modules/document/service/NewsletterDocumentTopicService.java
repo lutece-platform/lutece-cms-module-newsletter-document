@@ -4,12 +4,12 @@ import fr.paris.lutece.plugins.newsletter.business.NewsLetter;
 import fr.paris.lutece.plugins.newsletter.business.NewsLetterHome;
 import fr.paris.lutece.plugins.newsletter.business.NewsLetterTemplate;
 import fr.paris.lutece.plugins.newsletter.business.NewsLetterTemplateHome;
-import fr.paris.lutece.plugins.newsletter.business.section.NewsletterSection;
+import fr.paris.lutece.plugins.newsletter.business.topic.NewsletterTopic;
 import fr.paris.lutece.plugins.newsletter.modules.document.business.NewsletterDocument;
 import fr.paris.lutece.plugins.newsletter.modules.document.business.NewsletterDocumentHome;
 import fr.paris.lutece.plugins.newsletter.service.NewsletterPlugin;
 import fr.paris.lutece.plugins.newsletter.service.NewsletterService;
-import fr.paris.lutece.plugins.newsletter.service.section.INewsletterSectionService;
+import fr.paris.lutece.plugins.newsletter.service.topic.INewsletterTopicService;
 import fr.paris.lutece.plugins.newsletter.util.NewsletterUtils;
 import fr.paris.lutece.portal.business.user.AdminUser;
 import fr.paris.lutece.portal.service.i18n.I18nService;
@@ -29,14 +29,14 @@ import org.apache.commons.lang.StringUtils;
 
 
 /**
- * The newsletter document section service
+ * The newsletter document topic service
  */
-public class NewsletterDocumentSectionService implements INewsletterSectionService
+public class NewsletterDocumentTopicService implements INewsletterTopicService
 {
     /**
-     * NEwsletter document section type
+     * Newsletter document topic type
      */
-    public static final String NEWSLETTER_DOCUMENT_SECTION_TYPE = "NEWSLETTER_DOCUMENT";
+    public static final String NEWSLETTER_DOCUMENT_TOPIC_TYPE = "NEWSLETTER_DOCUMENT";
 
     // PARAMETERS
     private static final String PARAMETER_CATEGORY_LIST_ID = "category_list_id";
@@ -46,8 +46,8 @@ public class NewsletterDocumentSectionService implements INewsletterSectionServi
     private static final String CONSTANT_UNCATEGORIZED_DOCUMENTS_KEY = "-1";
 
     // MESSAGES AND LABELS
-    private static final String LABEL_MODIFY_UNCATEGORIZED_DOCUMENTS = "module.newsletter.document.modify_document_section.uncategorizedDocuments.label";
-    private static final String MESSAGE_NEWSLETTER_DOCUMENT_SECTION_TYPE_NAME = "module.newsletter.document.sectionType.name";
+    private static final String LABEL_MODIFY_UNCATEGORIZED_DOCUMENTS = "module.newsletter.document.modify_document_topic.uncategorizedDocuments.label";
+    private static final String MESSAGE_NEWSLETTER_DOCUMENT_TOPIC_TYPE_NAME = "module.newsletter.document.topicType.name";
 
     // MARKS
     private static final String MARK_CATEGORY_LIST = "category_list";
@@ -56,7 +56,7 @@ public class NewsletterDocumentSectionService implements INewsletterSectionServi
     private static final String MARK_IMG_PATH = "img_path";
 
     // TEMPLATES
-    private static final String TEMPLATE_MODIFY_NEWSLETTER_DOCUMENT_SECTION_CONFIG = "admin/plugins/newsletter/modules/document/modify_newsletter_document_section_config.html";
+    private static final String TEMPLATE_MODIFY_NEWSLETTER_DOCUMENT_TOPIC_CONFIG = "admin/plugins/newsletter/modules/document/modify_newsletter_document_topic_config.html";
 
     private Plugin _newsletterDocumentPlugin;
     private Plugin _newsletterPlugin;
@@ -66,18 +66,18 @@ public class NewsletterDocumentSectionService implements INewsletterSectionServi
      * {@inheritDoc}
      */
     @Override
-    public String getNewsletterSectionTypeCode( )
+    public String getNewsletterTopicTypeCode( )
     {
-        return NEWSLETTER_DOCUMENT_SECTION_TYPE;
+        return NEWSLETTER_DOCUMENT_TOPIC_TYPE;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getNewsletterSectionTypeName( Locale locale )
+    public String getNewsletterTopicTypeName( Locale locale )
     {
-        return I18nService.getLocalizedString( MESSAGE_NEWSLETTER_DOCUMENT_SECTION_TYPE_NAME, locale );
+        return I18nService.getLocalizedString( MESSAGE_NEWSLETTER_DOCUMENT_TOPIC_TYPE_NAME, locale );
     }
 
     /**
@@ -94,16 +94,16 @@ public class NewsletterDocumentSectionService implements INewsletterSectionServi
      * {@inheritDoc}
      */
     @Override
-    public String getConfigurationPage( NewsletterSection newsletterSection, String strBaseUrl, AdminUser user,
+    public String getConfigurationPage( NewsletterTopic newsletterTopic, String strBaseUrl, AdminUser user,
             Locale locale )
     {
         Map<String, Object> model = new HashMap<String, Object>( );
 
-        // We get the categories associated with the section
-        int[] arrayCategoryListIds = NewsletterDocumentHome.findNewsletterCategoryIds( newsletterSection.getId( ),
+        // We get the categories associated with the topic
+        int[] arrayCategoryListIds = NewsletterDocumentHome.findNewsletterCategoryIds( newsletterTopic.getId( ),
                 getNewsletterDocumentPlugin( ) );
 
-        // We get the list of categories available for this section type
+        // We get the list of categories available for this topic type
         ReferenceList listCategoryList = NewsletterDocumentHome.getAllCategories( user );
         listCategoryList.addItem( CONSTANT_UNCATEGORIZED_DOCUMENTS_KEY,
                 I18nService.getLocalizedString( LABEL_MODIFY_UNCATEGORIZED_DOCUMENTS, locale ) );
@@ -113,10 +113,10 @@ public class NewsletterDocumentSectionService implements INewsletterSectionServi
         {
             strSelectedCategoryList[i] = String.valueOf( arrayCategoryListIds[i] );
         }
-        // We check categories associated with this section
+        // We check categories associated with this topic
         listCategoryList.checkItems( strSelectedCategoryList );
 
-        NewsletterDocument newsletterDocument = NewsletterDocumentHome.findByPrimaryKey( newsletterSection.getId( ),
+        NewsletterDocument newsletterDocument = NewsletterDocumentHome.findByPrimaryKey( newsletterTopic.getId( ),
                 getNewsletterDocumentPlugin( ) );
 
         String strPathImageTemplate = getNewsletterService( ).getImageFolderPath( strBaseUrl );
@@ -124,10 +124,10 @@ public class NewsletterDocumentSectionService implements INewsletterSectionServi
         model.put( MARK_CATEGORY_LIST, listCategoryList );
         model.put( MARK_NEWSLETTER_DOCUMENT, newsletterDocument );
         model.put( MARK_TEMPLATES_LIST, NewsLetterTemplateHome.getTemplatesCollectionByType(
-                NEWSLETTER_DOCUMENT_SECTION_TYPE, getNewsletterPlugin( ) ) );
+                NEWSLETTER_DOCUMENT_TOPIC_TYPE, getNewsletterPlugin( ) ) );
         model.put( MARK_IMG_PATH, strPathImageTemplate );
 
-        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MODIFY_NEWSLETTER_DOCUMENT_SECTION_CONFIG,
+        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MODIFY_NEWSLETTER_DOCUMENT_TOPIC_CONFIG,
                 locale, model );
         return template.getHtml( );
     }
@@ -136,13 +136,13 @@ public class NewsletterDocumentSectionService implements INewsletterSectionServi
      * {@inheritDoc}
      */
     @Override
-    public void saveConfiguration( Map<String, String[]> mapParameters, NewsletterSection newsletterSection,
+    public void saveConfiguration( Map<String, String[]> mapParameters, NewsletterTopic newsletterTopic,
             AdminUser user, Locale locale )
     {
         String[] strCategoryIds = mapParameters.get( PARAMETER_CATEGORY_LIST_ID );
 
         NewsletterDocumentHome
-                .removeNewsLetterDocumentList( newsletterSection.getId( ), getNewsletterDocumentPlugin( ) );
+                .removeNewsLetterDocumentList( newsletterTopic.getId( ), getNewsletterDocumentPlugin( ) );
 
         if ( ( strCategoryIds != null ) )
         {
@@ -150,7 +150,7 @@ public class NewsletterDocumentSectionService implements INewsletterSectionServi
             for ( int i = 0; i < strCategoryIds.length; i++ )
             {
                 int nCategoryId = Integer.parseInt( strCategoryIds[i] );
-                NewsletterDocumentHome.associateNewsLetterDocumentList( newsletterSection.getId( ), nCategoryId,
+                NewsletterDocumentHome.associateNewsLetterDocumentList( newsletterTopic.getId( ), nCategoryId,
                         getNewsletterDocumentPlugin( ) );
             }
         }
@@ -159,9 +159,9 @@ public class NewsletterDocumentSectionService implements INewsletterSectionServi
         if ( StringUtils.isNumeric( strTemplateId ) )
         {
             NewsletterDocument newsletterDocument = NewsletterDocumentHome.findByPrimaryKey(
-                    newsletterSection.getId( ), getNewsletterDocumentPlugin( ) );
+                    newsletterTopic.getId( ), getNewsletterDocumentPlugin( ) );
             newsletterDocument.setIdTemplate( Integer.parseInt( strTemplateId ) );
-            NewsletterDocumentHome.updateDocumentSection( newsletterDocument, getNewsletterDocumentPlugin( ) );
+            NewsletterDocumentHome.updateDocumentTopic( newsletterDocument, getNewsletterDocumentPlugin( ) );
         }
     }
 
@@ -169,24 +169,24 @@ public class NewsletterDocumentSectionService implements INewsletterSectionServi
      * {@inheritDoc}
      */
     @Override
-    public void createNewsletterSection( NewsletterSection newsletterSection, AdminUser user, Locale locale )
+    public void createNewsletterTopic( NewsletterTopic newsletterTopic, AdminUser user, Locale locale )
     {
-        NewsletterDocument section = new NewsletterDocument( );
-        section.setId( newsletterSection.getId( ) );
+        NewsletterDocument topic = new NewsletterDocument( );
+        topic.setId( newsletterTopic.getId( ) );
 
         List<NewsLetterTemplate> listTemplates = NewsLetterTemplateHome.getTemplatesCollectionByType(
-                NEWSLETTER_DOCUMENT_SECTION_TYPE, getNewsletterPlugin( ) );
+                NEWSLETTER_DOCUMENT_TOPIC_TYPE, getNewsletterPlugin( ) );
         if ( listTemplates != null && listTemplates.size( ) > 0 )
         {
             // We default to the first template
-            section.setIdTemplate( listTemplates.get( 0 ).getId( ) );
+            topic.setIdTemplate( listTemplates.get( 0 ).getId( ) );
         }
         else
         {
-            section.setIdTemplate( 0 );
+            topic.setIdTemplate( 0 );
         }
-        NewsletterDocumentHome.createDocumentSection( section, getNewsletterDocumentPlugin( ) );
-        NewsletterDocumentHome.associateNewsLetterDocumentList( newsletterSection.getId( ),
+        NewsletterDocumentHome.createDocumentTopic( topic, getNewsletterDocumentPlugin( ) );
+        NewsletterDocumentHome.associateNewsLetterDocumentList( newsletterTopic.getId( ),
                 Integer.parseInt( CONSTANT_UNCATEGORIZED_DOCUMENTS_KEY ), getNewsletterDocumentPlugin( ) );
     }
 
@@ -194,24 +194,24 @@ public class NewsletterDocumentSectionService implements INewsletterSectionServi
      * {@inheritDoc}
      */
     @Override
-    public void removeNewsletterSection( int nNewsletterSectionId )
+    public void removeNewsletterTopic( int nNewsletterTopicId )
     {
         // removes relationship between the newsletter and document list
-        NewsletterDocumentHome.removeNewsLetterDocumentList( nNewsletterSectionId, getNewsletterDocumentPlugin( ) );
+        NewsletterDocumentHome.removeNewsLetterDocumentList( nNewsletterTopicId, getNewsletterDocumentPlugin( ) );
 
-        // Remove the newsletter document section
-        NewsletterDocumentHome.deleteDocumentSection( nNewsletterSectionId, getNewsletterDocumentPlugin( ) );
+        // Remove the newsletter document topic
+        NewsletterDocumentHome.deleteDocumentTopic( nNewsletterTopicId, getNewsletterDocumentPlugin( ) );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getHtmlContent( NewsletterSection newsletterSection, AdminUser user, Locale locale )
+    public String getHtmlContent( NewsletterTopic newsletterTopic, AdminUser user, Locale locale )
     {
-        NewsLetter newsletter = NewsLetterHome.findByPrimaryKey( newsletterSection.getIdNewsletter( ),
+        NewsLetter newsletter = NewsLetterHome.findByPrimaryKey( newsletterTopic.getIdNewsletter( ),
                 getNewsletterPlugin( ) );
-        NewsletterDocument newsletterDocument = NewsletterDocumentHome.findByPrimaryKey( newsletterSection.getId( ),
+        NewsletterDocument newsletterDocument = NewsletterDocumentHome.findByPrimaryKey( newsletterTopic.getId( ),
                 getNewsletterDocumentPlugin( ) );
         String strContent = NewsletterDocumentService.getInstance( ).generateDocumentsList(
                 newsletterDocument.getId( ), newsletterDocument.getIdTemplate( ), newsletter.getDateLastSending( ),

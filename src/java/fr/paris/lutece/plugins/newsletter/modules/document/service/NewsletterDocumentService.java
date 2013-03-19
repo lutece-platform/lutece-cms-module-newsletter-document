@@ -118,8 +118,8 @@ public class NewsletterDocumentService
 
     /**
      * Generate the html code for documents corresponding to the documents
-     * associated with the section and to a given publishing date
-     * @param nSectionId the section to generate
+     * associated with the topic and to a given publishing date
+     * @param nTopicId the topic to generate
      * @param nTemplateId the document id to use
      * @param datePublishing minimum date of publishing of documents. Documents
      *            published before this date will not be considered
@@ -129,11 +129,11 @@ public class NewsletterDocumentService
      * @return the html code for the document list of null if no document
      *         template available
      */
-    public String generateDocumentsList( int nSectionId, int nTemplateId, Timestamp datePublishing, String strBaseUrl,
+    public String generateDocumentsList( int nTopicId, int nTemplateId, Timestamp datePublishing, String strBaseUrl,
             AdminUser user, Locale locale )
     {
         Plugin pluginNewsLetter = PluginService.getPlugin( NewsletterPlugin.PLUGIN_NAME );
-        int[] arrayCategoriesIds = NewsletterDocumentHome.findNewsletterCategoryIds( nSectionId, pluginNewsLetter );
+        int[] arrayCategoriesIds = NewsletterDocumentHome.findNewsletterCategoryIds( nTopicId, pluginNewsLetter );
         String strTemplatePath = NewsletterUtils.getHtmlTemplatePath( nTemplateId, pluginNewsLetter );
 
         if ( strTemplatePath == null )
@@ -143,7 +143,7 @@ public class NewsletterDocumentService
 
         DocumentFilter documentFilter = new DocumentFilter( );
 
-        if ( ( arrayCategoriesIds.length > 0 ) && ( arrayCategoriesIds[0] > -1 ) )
+        if ( arrayCategoriesIds != null && arrayCategoriesIds.length > 0 )
         {
             documentFilter.setCategoriesId( arrayCategoriesIds );
         }

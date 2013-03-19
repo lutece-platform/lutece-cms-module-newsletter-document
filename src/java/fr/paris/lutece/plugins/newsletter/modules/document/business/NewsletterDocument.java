@@ -1,7 +1,7 @@
 package fr.paris.lutece.plugins.newsletter.modules.document.business;
 
 /**
- * Newsletter document section class
+ * Newsletter document topic class
  */
 public class NewsletterDocument
 {
@@ -9,8 +9,8 @@ public class NewsletterDocument
     private int _nIdTemplate;
 
     /**
-     * Get the id of the section
-     * @return The id of the section
+     * Get the id of the topic
+     * @return The id of the topic
      */
     public int getId( )
     {
@@ -18,8 +18,8 @@ public class NewsletterDocument
     }
 
     /**
-     * Set the id of the section
-     * @param nId The id of the section
+     * Set the id of the topic
+     * @param nId The id of the topic
      */
     public void setId( int nId )
     {
@@ -27,8 +27,8 @@ public class NewsletterDocument
     }
 
     /**
-     * Get the id of the template to apply to documents of this section
-     * @return The id of the template to apply to documents of this section
+     * Get the id of the template to apply to documents of this topic
+     * @return The id of the template to apply to documents of this topic
      */
     public int getIdTemplate( )
     {
@@ -36,9 +36,9 @@ public class NewsletterDocument
     }
 
     /**
-     * Set the id of the template to apply to documents of this section
+     * Set the id of the template to apply to documents of this topic
      * @param nIdTemplate The id of the template to apply to documents of this
-     *            section
+     *            topic
      */
     public void setIdTemplate( int nIdTemplate )
     {

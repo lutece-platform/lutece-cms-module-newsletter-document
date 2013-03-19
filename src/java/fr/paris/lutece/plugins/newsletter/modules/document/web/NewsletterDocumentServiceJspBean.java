@@ -38,7 +38,7 @@ import fr.paris.lutece.plugins.document.business.DocumentHome;
 import fr.paris.lutece.plugins.document.service.DocumentPlugin;
 import fr.paris.lutece.plugins.newsletter.business.NewsLetterTemplateHome;
 import fr.paris.lutece.plugins.newsletter.modules.document.business.NewsletterDocumentHome;
-import fr.paris.lutece.plugins.newsletter.modules.document.service.NewsletterDocumentSectionService;
+import fr.paris.lutece.plugins.newsletter.modules.document.service.NewsletterDocumentTopicService;
 import fr.paris.lutece.plugins.newsletter.modules.document.service.NewsletterDocumentService;
 import fr.paris.lutece.plugins.newsletter.modules.document.util.NewsletterDocumentUtils;
 import fr.paris.lutece.plugins.newsletter.service.NewsletterPlugin;
@@ -163,7 +163,7 @@ public class NewsletterDocumentServiceJspBean extends InsertServiceJspBean imple
         model.put( MARK_DOCUMENT_LIST, list );
 
         ReferenceList templateList = NewsLetterTemplateHome.getTemplatesListByType(
-                NewsletterDocumentSectionService.NEWSLETTER_DOCUMENT_SECTION_TYPE, pluginNewsletter );
+                NewsletterDocumentTopicService.NEWSLETTER_DOCUMENT_TOPIC_TYPE, pluginNewsletter );
         model.put( MARK_TEMPLATES_LIST, templateList );
 
         //Replace portal path for editor and document display

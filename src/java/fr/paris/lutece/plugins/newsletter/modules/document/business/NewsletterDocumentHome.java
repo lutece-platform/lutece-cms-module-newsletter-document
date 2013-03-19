@@ -28,44 +28,44 @@ public final class NewsletterDocumentHome
     }
 
     /**
-     * Get a newsletter document section from its id
-     * @param nIdSection the id of the section to get
+     * Get a newsletter document topic from its id
+     * @param nIdTopic the id of the topic to get
      * @param plugin The plugin
-     * @return The section, or null if no section was found
+     * @return The topic, or null if no topic was found
      */
-    public static NewsletterDocument findByPrimaryKey( int nIdSection, Plugin plugin )
+    public static NewsletterDocument findByPrimaryKey( int nIdTopic, Plugin plugin )
     {
-        return _dao.findByPrimaryKey( nIdSection, plugin );
+        return _dao.findByPrimaryKey( nIdTopic, plugin );
     }
 
     /**
-     * Update a newsletter document section
-     * @param section The section to update
+     * Update a newsletter document topic
+     * @param topic The topic to update
      * @param plugin The plugin
      */
-    public static void updateDocumentSection( NewsletterDocument section, Plugin plugin )
+    public static void updateDocumentTopic( NewsletterDocument topic, Plugin plugin )
     {
-        _dao.updateDocumentSection( section, plugin );
+        _dao.updateDocumentTopic( topic, plugin );
     }
 
     /**
-     * Remove a newsletter document section from the database
-     * @param nIdSection The id of the newsletter document section to remove
+     * Remove a newsletter document topic from the database
+     * @param nIdTopic The id of the newsletter document topic to remove
      * @param plugin The plugin
      */
-    public static void deleteDocumentSection( int nIdSection, Plugin plugin )
+    public static void deleteDocumentTopic( int nIdTopic, Plugin plugin )
     {
-        _dao.deleteDocumentSection( nIdSection, plugin );
+        _dao.deleteDocumentTopic( nIdTopic, plugin );
     }
 
     /**
-     * Insert a new newsletter document section into the database
-     * @param section The newsletter document section to insert
+     * Insert a new newsletter document topic into the database
+     * @param topic The newsletter document topic to insert
      * @param plugin the plugin
      */
-    public static void createDocumentSection( NewsletterDocument section, Plugin plugin )
+    public static void createDocumentTopic( NewsletterDocument topic, Plugin plugin )
     {
-        _dao.createDocumentSection( section, plugin );
+        _dao.createDocumentTopic( topic, plugin );
     }
 
     /**
@@ -111,13 +111,13 @@ public final class NewsletterDocumentHome
 
     /**
      * Associate a topic to a newsletter
-     * @param nSectionId the section identifier
+     * @param nTopicId the topic identifier
      * @param nDocumentCategoryId the id of the document category to associate
      * @param plugin the Plugin
      */
-    public static void associateNewsLetterDocumentList( int nSectionId, int nDocumentCategoryId, Plugin plugin )
+    public static void associateNewsLetterDocumentList( int nTopicId, int nDocumentCategoryId, Plugin plugin )
     {
-        _dao.associateNewsLetterDocumentList( nSectionId, nDocumentCategoryId, plugin );
+        _dao.associateNewsLetterDocumentList( nTopicId, nDocumentCategoryId, plugin );
     }
 
     /**
@@ -132,20 +132,20 @@ public final class NewsletterDocumentHome
 
     /**
      * loads the list of categories of the newsletter
-     * @param nSectionId the section identifier
+     * @param nTopicId the topic identifier
      * @param plugin the plugin
      * @return the array of categories id
      */
-    public static int[] findNewsletterCategoryIds( int nSectionId, Plugin plugin )
+    public static int[] findNewsletterCategoryIds( int nTopicId, Plugin plugin )
     {
-        return _dao.selectNewsletterCategoryIds( nSectionId, plugin );
+        return _dao.selectNewsletterCategoryIds( nTopicId, plugin );
     }
 
     /**
-     * Check if a template is used by a section
+     * Check if a template is used by a topic
      * @param nIdNewsletterTemplate The id of the template
      * @param plugin The newsletter plugin
-     * @return True if the template is used by a section, false otherwise
+     * @return True if the template is used by a topic, false otherwise
      */
     public static boolean findTemplate( int nIdNewsletterTemplate, Plugin plugin )
     {

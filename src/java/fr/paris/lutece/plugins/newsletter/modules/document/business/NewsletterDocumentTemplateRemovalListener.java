@@ -13,7 +13,7 @@ import java.util.Locale;
  */
 public class NewsletterDocumentTemplateRemovalListener implements RemovalListener
 {
-    private static final String MESSAGE_TEMPLATE_USED_BY_NEWSLETTER = "module.newsletter.document.message.templateUsedByDocumentSection";
+    private static final String MESSAGE_TEMPLATE_USED_BY_NEWSLETTER = "module.newsletter.document.message.templateUsedByDocumentTopic";
 
     /**
      * {@inheritDoc}

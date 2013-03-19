@@ -1,11 +1,11 @@
 --
--- Table structure for table newsletter_document_section
+-- Table structure for table newsletter_document_topic
 --
-DROP TABLE IF EXISTS newsletter_document_section;
-CREATE TABLE newsletter_document_section (
-  id_section INT NOT NULL,
+DROP TABLE IF EXISTS newsletter_document_topic;
+CREATE TABLE newsletter_document_topic (
+  id_topic INT NOT NULL,
   id_template INT NOT NULL,
-  PRIMARY KEY (id_section)
+  PRIMARY KEY (id_topic)
 );
 
 --
@@ -14,6 +14,6 @@ CREATE TABLE newsletter_document_section (
 DROP TABLE IF EXISTS newsletter_document_category;
 CREATE TABLE newsletter_document_category (
   id_category INT NOT NULL,
-  id_section INT NOT NULL,
-  PRIMARY KEY (id_category,id_section)
+  id_topic INT NOT NULL,
+  PRIMARY KEY (id_category,id_topic)
 );

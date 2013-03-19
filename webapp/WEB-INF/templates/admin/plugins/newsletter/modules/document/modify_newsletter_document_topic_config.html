@@ -1,5 +1,5 @@
 <div class="control-group">
-	<label class="control-label" for="category_list_id">#i18n{module.newsletter.document.modify_document_section.categoryList} *:</label>
+	<label class="control-label" for="category_list_id">#i18n{module.newsletter.document.modify_document_topic.categoryList} *:</label>
 	<div class="controls">
 		<#if category_list?has_content>
 			<select multiple="multiple" id="category_list_id" name="category_list_id" >
@@ -12,19 +12,19 @@
 				</#list>
 			</select>
 		<#else>
-			#i18n{module.newsletter.document.modify_document_section.labelNoCategory}
+			#i18n{module.newsletter.document.modify_document_topic.labelNoCategory}
 		</#if>
 	</div>
 </div>
 <div class="control-group">
-	<label class="control-label" for="template_id">#i18n{module.newsletter.document.modify_document_section.templatesList} *:</label>
+	<label class="control-label" for="template_id">#i18n{module.newsletter.document.modify_document_topic.templatesList} *:</label>
 	<div class="controls">
 		<#if templates_list?has_content>
 			<#list templates_list as template >
 				<input class="radio inline" type="radio" name="template_id" value="${template.id}" <#if template.id=newsletterDocument.idTemplate>checked="checked"</#if> />
 				<img src="${img_path}/${template.picture}" border="0"  height="24" width="24" alt="${template.description}" title="${template.description}" />
 			</#list>
-			<span class="help-block">#i18n{module.newsletter.document.modify_document_section.templatesHelp}</span>
+			<span class="help-block">#i18n{module.newsletter.document.modify_document_topic.templatesHelp}</span>
 		<#else>
 			<input type="hidden" name="template_id" value="0" />
 			<p class="label label-warning">#i18n{newsletter.compose_newsletter.noNewsletterTemplate}</p>
