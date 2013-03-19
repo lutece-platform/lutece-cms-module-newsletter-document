@@ -197,6 +197,10 @@ public class NewsletterDocumentService
                     model.put( MARK_IMG_PATH, _newsletterService.getUnsecuredWebappUrl( ) + strImgFolder + pictureName );
                 }
             }
+            else
+            {
+
+            }
 
             model.put( NewsLetterConstants.MARK_BASE_URL, strBaseUrl );
             model.put( MARK_DOCUMENT_PORTLETS_COLLEC, porletCollec );

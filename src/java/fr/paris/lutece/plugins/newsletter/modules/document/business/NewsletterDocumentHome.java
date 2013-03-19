@@ -140,4 +140,15 @@ public final class NewsletterDocumentHome
     {
         return _dao.selectNewsletterCategoryIds( nSectionId, plugin );
     }
+
+    /**
+     * Check if a template is used by a section
+     * @param nIdNewsletterTemplate The id of the template
+     * @param plugin The newsletter plugin
+     * @return True if the template is used by a section, false otherwise
+     */
+    public static boolean findTemplate( int nIdNewsletterTemplate, Plugin plugin )
+    {
+        return _dao.findTemplate( nIdNewsletterTemplate, plugin );
+    }
 }

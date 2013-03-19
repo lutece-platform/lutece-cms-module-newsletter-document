@@ -26,6 +26,7 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
     private static final String SQL_QUERY_ASSOCIATE_NEWSLETTER_CATEGORY_LIST = "INSERT INTO newsletter_document_category ( id_section , id_category ) VALUES ( ?, ? ) ";
     private static final String SQL_QUERY_DELETE_NEWSLETTER_CATEGORY_LIST = "DELETE FROM newsletter_document_category WHERE id_section = ?";
     private static final String SQL_QUERY_SELECT_NEWSLETTER_CATEGORY_IDS = "SELECT DISTINCT id_category FROM newsletter_document_category WHERE id_section = ?";
+    private static final String SQL_QUERY_FIND_TEMPLATE = " SELECT count(id_template) FROM newsletter_document_section WHERE id_template = ? ";
     private static final String SQL_FILTER_DATE_MODIF = " a.date_modification >=? ";
     private static final String SQL_FILTER_ID_PORTLET = " c.id_portlet = ? ";
 
@@ -94,7 +95,8 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
      * {@inheritDoc}
      */
     @Override
-    public Collection<Document> selectDocumentsByDateAndCategory( int nPortletId, Timestamp dateLastSending, Plugin plugin )
+    public Collection<Document> selectDocumentsByDateAndCategory( int nPortletId, Timestamp dateLastSending,
+            Plugin plugin )
     {
         StringBuilder sbSql = new StringBuilder( SQL_QUERY_SELECT_DOCUMENT_BY_DATE_AND_LIST_DOCUMENT );
 
@@ -216,6 +218,27 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
         daoUtil.free( );
 
         return nIdsArray;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean findTemplate( int nIdNewsletterTemplate, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_TEMPLATE, plugin );
+        daoUtil.setInt( 1, nIdNewsletterTemplate );
+        daoUtil.executeQuery( );
+
+        boolean bRes = false;
+        if ( daoUtil.next( ) )
+        {
+            bRes = daoUtil.getInt( 1 ) > 0;
+        }
+
+        daoUtil.free( );
+
+        return bRes;
     }
 
 }

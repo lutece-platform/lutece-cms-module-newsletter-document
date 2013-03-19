@@ -83,4 +83,12 @@ public interface INewsletterDocumentDAO
      */
     int[] selectNewsletterCategoryIds( int nSectionId, Plugin plugin );
 
+    /**
+     * Check if a template is used by a section
+     * @param nIdNewsletterTemplate The id of the template
+     * @param plugin The newsletter plugin
+     * @return True if the template is used by a section, false otherwise
+     */
+    boolean findTemplate( int nIdNewsletterTemplate, Plugin plugin );
+
 }

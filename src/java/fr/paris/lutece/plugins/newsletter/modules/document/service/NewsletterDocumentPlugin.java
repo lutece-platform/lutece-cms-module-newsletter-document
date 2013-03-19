@@ -33,17 +33,29 @@
  */
 package fr.paris.lutece.plugins.newsletter.modules.document.service;
 
-import fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation;
+import fr.paris.lutece.plugins.newsletter.modules.document.business.NewsletterDocumentTemplateRemovalListener;
+import fr.paris.lutece.plugins.newsletter.service.NewsletterTemplateRemovalService;
+import fr.paris.lutece.portal.service.plugin.Plugin;
 
 
 /**
  * The newsletter plugin
  */
-public class NewsletterDocumentPlugin extends PluginDefaultImplementation
+public class NewsletterDocumentPlugin extends Plugin
 {
     /**
      * Name of the plugin
      */
     public static final String PLUGIN_NAME = "newsletter-document";
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void init( )
+    {
+        NewsletterTemplateRemovalService.getService( ).registerListener(
+                new NewsletterDocumentTemplateRemovalListener( ) );
+    }
 
 }
