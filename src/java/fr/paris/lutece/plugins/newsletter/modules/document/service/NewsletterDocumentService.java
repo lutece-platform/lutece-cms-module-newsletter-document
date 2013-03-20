@@ -2,8 +2,11 @@ package fr.paris.lutece.plugins.newsletter.modules.document.service;
 
 import fr.paris.lutece.plugins.document.business.Document;
 import fr.paris.lutece.plugins.document.business.DocumentFilter;
+import fr.paris.lutece.plugins.document.business.DocumentHome;
 import fr.paris.lutece.plugins.document.business.attributes.DocumentAttribute;
+import fr.paris.lutece.plugins.document.service.DocumentPlugin;
 import fr.paris.lutece.plugins.document.service.publishing.PublishingService;
+import fr.paris.lutece.plugins.newsletter.modules.document.business.NewsletterDocument;
 import fr.paris.lutece.plugins.newsletter.modules.document.business.NewsletterDocumentHome;
 import fr.paris.lutece.plugins.newsletter.modules.document.util.NewsletterDocumentUtils;
 import fr.paris.lutece.plugins.newsletter.service.NewsletterPlugin;
@@ -125,7 +128,7 @@ public class NewsletterDocumentService
     /**
      * Generate the html code for documents corresponding to the documents
      * associated with the topic and to a given publishing date
-     * @param nTopicId the topic to generate
+     * @param newsletterDocument the topic to generate
      * @param nTemplateId the document id to use
      * @param datePublishing minimum date of publishing of documents. Documents
      *            published before this date will not be considered
@@ -135,27 +138,57 @@ public class NewsletterDocumentService
      * @return the html code for the document list of null if no document
      *         template available
      */
-    public String generateDocumentsList( int nTopicId, int nTemplateId, Timestamp datePublishing, String strBaseUrl,
-            AdminUser user, Locale locale )
+    public String generateDocumentsList( NewsletterDocument newsletterDocument, int nTemplateId,
+            Timestamp datePublishing, String strBaseUrl, AdminUser user, Locale locale )
     {
         Plugin pluginNewsLetter = PluginService.getPlugin( NewsletterPlugin.PLUGIN_NAME );
-        int[] arrayCategoriesIds = NewsletterDocumentHome.findNewsletterCategoryIds( nTopicId, pluginNewsLetter );
+        DocumentFilter documentFilter = new DocumentFilter( );
         String strTemplatePath = NewsletterUtils.getHtmlTemplatePath( nTemplateId, pluginNewsLetter );
 
         if ( strTemplatePath == null )
         {
             return null;
         }
-
-        DocumentFilter documentFilter = new DocumentFilter( );
-
-        if ( arrayCategoriesIds != null && arrayCategoriesIds.length > 0 )
+        Collection<Document> listDocuments = null;
+        if ( newsletterDocument.getUseDocumentCategories( ) )
         {
-            documentFilter.setCategoriesId( arrayCategoriesIds );
+            int[] arrayCategoriesIds = NewsletterDocumentHome.findNewsletterCategoryIds( newsletterDocument.getId( ),
+                    pluginNewsLetter );
+            if ( arrayCategoriesIds != null && arrayCategoriesIds.length > 0 )
+            {
+                documentFilter.setCategoriesId( arrayCategoriesIds );
+            }
+            listDocuments = PublishingService.getInstance( ).getPublishedDocumentsSinceDate( datePublishing,
+                    documentFilter, locale );
+        }
+        else
+        {
+            int[] arrayPortletsIds = NewsletterDocumentHome.findNewsletterPortletsIds( newsletterDocument.getId( ),
+                    pluginNewsLetter );
+            if ( arrayPortletsIds != null && arrayPortletsIds.length > 0 )
+            {
+                Plugin documentPlugin = PluginService.getPlugin( DocumentPlugin.PLUGIN_NAME );
+                List<Integer> listDocumentIds = NewsletterDocumentHome.getPublishedDocumentsIdsListByPortletIds(
+                        arrayPortletsIds, datePublishing, documentPlugin );
+                if ( listDocumentIds != null && listDocumentIds.size( ) > 0 )
+                {
+                    int[] arrayDocumentsId = new int[listDocumentIds.size( )];
+                    int nIndex = 0;
+                    for ( int nDocumentId : listDocumentIds )
+                    {
+                        arrayDocumentsId[nIndex] = nDocumentId;
+                        nIndex++;
+                    }
+                    documentFilter.setIds( arrayDocumentsId );
+                    listDocuments = DocumentHome.findByFilter( documentFilter, locale );
+                }
+            }
         }
 
-        Collection<Document> listDocuments = PublishingService.getInstance( ).getPublishedDocumentsSinceDate(
-                datePublishing, documentFilter, locale );
+        if ( listDocuments == null )
+        {
+            return StringUtils.EMPTY;
+        }
 
         StringBuffer sbDocumentLists = new StringBuffer( );
 

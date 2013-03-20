@@ -38,8 +38,8 @@ import fr.paris.lutece.plugins.document.business.DocumentHome;
 import fr.paris.lutece.plugins.document.service.DocumentPlugin;
 import fr.paris.lutece.plugins.newsletter.business.NewsLetterTemplateHome;
 import fr.paris.lutece.plugins.newsletter.modules.document.business.NewsletterDocumentHome;
-import fr.paris.lutece.plugins.newsletter.modules.document.service.NewsletterDocumentTopicService;
 import fr.paris.lutece.plugins.newsletter.modules.document.service.NewsletterDocumentService;
+import fr.paris.lutece.plugins.newsletter.modules.document.service.NewsletterDocumentTopicService;
 import fr.paris.lutece.plugins.newsletter.modules.document.util.NewsletterDocumentUtils;
 import fr.paris.lutece.plugins.newsletter.service.NewsletterPlugin;
 import fr.paris.lutece.plugins.newsletter.service.NewsletterService;
@@ -146,13 +146,13 @@ public class NewsletterDocumentServiceJspBean extends InsertServiceJspBean imple
         Map<String, Object> model = new HashMap<String, Object>( );
 
         // Criteria
-        // Combo of available document list
-        ReferenceList listDocumentlists = NewsletterDocumentHome.getDocumentLists( pluginDocument );
+        // Combo of available document list portlets
+        ReferenceList listDocumentPortlets = NewsletterDocumentHome.getDocumentListPortlets( pluginDocument );
         ReferenceItem refItem = new ReferenceItem( );
         refItem.setCode( CONSTANT_STRING_ZERO );
         refItem.setName( I18nService.getLocalizedString( LABEL_FRAGMENT_COMBO_ALL_DOCUMENT_LIST_ITEM, locale ) );
-        listDocumentlists.add( 0, refItem );
-        model.put( MARK_COMBO_DOCUMENT_LIST, listDocumentlists );
+        listDocumentPortlets.add( 0, refItem );
+        model.put( MARK_COMBO_DOCUMENT_LIST, listDocumentPortlets );
 
         // re-display the published date field
         model.put( BOOKMARK_START_PUBLISHED_DATE, strPublishedDate );

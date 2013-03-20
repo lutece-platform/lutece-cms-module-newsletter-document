@@ -1,5 +1,6 @@
 package fr.paris.lutece.plugins.newsletter.modules.document.service;
 
+import fr.paris.lutece.plugins.document.service.DocumentPlugin;
 import fr.paris.lutece.plugins.newsletter.business.NewsLetter;
 import fr.paris.lutece.plugins.newsletter.business.NewsLetterHome;
 import fr.paris.lutece.plugins.newsletter.business.NewsLetterTemplate;
@@ -41,6 +42,7 @@ public class NewsletterDocumentTopicService implements INewsletterTopicService
     // PARAMETERS
     private static final String PARAMETER_CATEGORY_LIST_ID = "category_list_id";
     private static final String PARAMETER_TEMPLATE_ID = "template_id";
+    private static final String PARAMETER_PORTLETS_ID = "portlets_id";
 
     // PROPERTIES
     private static final String CONSTANT_UNCATEGORIZED_DOCUMENTS_KEY = "-1";
@@ -51,9 +53,11 @@ public class NewsletterDocumentTopicService implements INewsletterTopicService
 
     // MARKS
     private static final String MARK_CATEGORY_LIST = "category_list";
+    private static final String MARK_DOCUMENT_LIST_PORTLETS = "document_list_portlets";
     private static final String MARK_TEMPLATES_LIST = "templates_list";
     private static final String MARK_NEWSLETTER_DOCUMENT = "newsletterDocument";
     private static final String MARK_IMG_PATH = "img_path";
+    private static final String MARK_USE_CATEGORIES = "use_categories";
 
     // TEMPLATES
     private static final String TEMPLATE_MODIFY_NEWSLETTER_DOCUMENT_TOPIC_CONFIG = "admin/plugins/newsletter/modules/document/modify_newsletter_document_topic_config.html";
@@ -116,12 +120,26 @@ public class NewsletterDocumentTopicService implements INewsletterTopicService
         // We check categories associated with this topic
         listCategoryList.checkItems( strSelectedCategoryList );
 
+        // We get the list of document list portlets containing published documents
+        ReferenceList listDocumentPortlets = NewsletterDocumentHome.getDocumentListPortlets( getDocumentPlugin( ) );
+        int[] arrayPortletIds = NewsletterDocumentHome.findNewsletterPortletsIds( newsletterTopic.getId( ),
+                getNewsletterDocumentPlugin( ) );
+        String[] strSelectedPortlets = new String[arrayPortletIds.length];
+
+        for ( int i = 0; i < arrayPortletIds.length; i++ )
+        {
+            strSelectedPortlets[i] = String.valueOf( arrayPortletIds[i] );
+        }
+        // We check portlets associated with this topic
+        listDocumentPortlets.checkItems( strSelectedPortlets );
+
         NewsletterDocument newsletterDocument = NewsletterDocumentHome.findByPrimaryKey( newsletterTopic.getId( ),
                 getNewsletterDocumentPlugin( ) );
 
         String strPathImageTemplate = getNewsletterService( ).getImageFolderPath( strBaseUrl );
 
         model.put( MARK_CATEGORY_LIST, listCategoryList );
+        model.put( MARK_DOCUMENT_LIST_PORTLETS, listDocumentPortlets );
         model.put( MARK_NEWSLETTER_DOCUMENT, newsletterDocument );
         model.put( MARK_TEMPLATES_LIST, NewsLetterTemplateHome.getTemplatesCollectionByType(
                 NEWSLETTER_DOCUMENT_TOPIC_TYPE, getNewsletterPlugin( ) ) );
@@ -141,8 +159,8 @@ public class NewsletterDocumentTopicService implements INewsletterTopicService
     {
         String[] strCategoryIds = mapParameters.get( PARAMETER_CATEGORY_LIST_ID );
 
-        NewsletterDocumentHome
-                .removeNewsLetterDocumentList( newsletterTopic.getId( ), getNewsletterDocumentPlugin( ) );
+        NewsletterDocumentHome.removeNewsLetterDocumentCategories( newsletterTopic.getId( ),
+                getNewsletterDocumentPlugin( ) );
 
         if ( ( strCategoryIds != null ) )
         {
@@ -150,7 +168,21 @@ public class NewsletterDocumentTopicService implements INewsletterTopicService
             for ( int i = 0; i < strCategoryIds.length; i++ )
             {
                 int nCategoryId = Integer.parseInt( strCategoryIds[i] );
-                NewsletterDocumentHome.associateNewsLetterDocumentList( newsletterTopic.getId( ), nCategoryId,
+                NewsletterDocumentHome.associateNewsLetterDocumentCategory( newsletterTopic.getId( ), nCategoryId,
+                        getNewsletterDocumentPlugin( ) );
+            }
+        }
+
+        NewsletterDocumentHome
+                .removeNewsLetterDocumentPortlet( newsletterTopic.getId( ), getNewsletterDocumentPlugin( ) );
+        String[] strPortletsIds = mapParameters.get( PARAMETER_PORTLETS_ID );
+        if ( ( strPortletsIds != null ) )
+        {
+            // recreate the category list with the new selection
+            for ( int i = 0; i < strPortletsIds.length; i++ )
+            {
+                int nPortletId = Integer.parseInt( strPortletsIds[i] );
+                NewsletterDocumentHome.associateNewsLetterDocumentPortlet( newsletterTopic.getId( ), nPortletId,
                         getNewsletterDocumentPlugin( ) );
             }
         }
@@ -158,8 +190,14 @@ public class NewsletterDocumentTopicService implements INewsletterTopicService
         String strTemplateId = NewsletterUtils.getStringFromStringArray( mapParameters.get( PARAMETER_TEMPLATE_ID ) );
         if ( StringUtils.isNumeric( strTemplateId ) )
         {
-            NewsletterDocument newsletterDocument = NewsletterDocumentHome.findByPrimaryKey(
-                    newsletterTopic.getId( ), getNewsletterDocumentPlugin( ) );
+            NewsletterDocument newsletterDocument = NewsletterDocumentHome.findByPrimaryKey( newsletterTopic.getId( ),
+                    getNewsletterDocumentPlugin( ) );
+
+            String strUseCategories = NewsletterUtils
+                    .getStringFromStringArray( mapParameters.get( MARK_USE_CATEGORIES ) );
+            boolean bUseCategories = Boolean.parseBoolean( strUseCategories );
+            newsletterDocument.setUseDocumentCategories( bUseCategories );
+
             newsletterDocument.setIdTemplate( Integer.parseInt( strTemplateId ) );
             NewsletterDocumentHome.updateDocumentTopic( newsletterDocument, getNewsletterDocumentPlugin( ) );
         }
@@ -185,8 +223,9 @@ public class NewsletterDocumentTopicService implements INewsletterTopicService
         {
             topic.setIdTemplate( 0 );
         }
+        topic.setUseDocumentCategories( true );
         NewsletterDocumentHome.createDocumentTopic( topic, getNewsletterDocumentPlugin( ) );
-        NewsletterDocumentHome.associateNewsLetterDocumentList( newsletterTopic.getId( ),
+        NewsletterDocumentHome.associateNewsLetterDocumentCategory( newsletterTopic.getId( ),
                 Integer.parseInt( CONSTANT_UNCATEGORIZED_DOCUMENTS_KEY ), getNewsletterDocumentPlugin( ) );
     }
 
@@ -196,8 +235,11 @@ public class NewsletterDocumentTopicService implements INewsletterTopicService
     @Override
     public void removeNewsletterTopic( int nNewsletterTopicId )
     {
-        // removes relationship between the newsletter and document list
-        NewsletterDocumentHome.removeNewsLetterDocumentList( nNewsletterTopicId, getNewsletterDocumentPlugin( ) );
+        // removes relationship between the topic and document list
+        NewsletterDocumentHome.removeNewsLetterDocumentCategories( nNewsletterTopicId, getNewsletterDocumentPlugin( ) );
+
+        // removes relationship between the topic and portlets
+        NewsletterDocumentHome.removeNewsLetterDocumentPortlet( nNewsletterTopicId, getNewsletterDocumentPlugin( ) );
 
         // Remove the newsletter document topic
         NewsletterDocumentHome.deleteDocumentTopic( nNewsletterTopicId, getNewsletterDocumentPlugin( ) );
@@ -213,9 +255,9 @@ public class NewsletterDocumentTopicService implements INewsletterTopicService
                 getNewsletterPlugin( ) );
         NewsletterDocument newsletterDocument = NewsletterDocumentHome.findByPrimaryKey( newsletterTopic.getId( ),
                 getNewsletterDocumentPlugin( ) );
-        String strContent = NewsletterDocumentService.getInstance( ).generateDocumentsList(
-                newsletterDocument.getId( ), newsletterDocument.getIdTemplate( ), newsletter.getDateLastSending( ),
-                AppPathService.getBaseUrl( ), user, locale );
+        String strContent = NewsletterDocumentService.getInstance( ).generateDocumentsList( newsletterDocument,
+                newsletterDocument.getIdTemplate( ), newsletter.getDateLastSending( ), AppPathService.getBaseUrl( ),
+                user, locale );
 
         return strContent;
     }
@@ -257,5 +299,14 @@ public class NewsletterDocumentTopicService implements INewsletterTopicService
             _newsletterPlugin = PluginService.getPlugin( NewsletterPlugin.PLUGIN_NAME );
         }
         return _newsletterPlugin;
+    }
+
+    /**
+     * Get the document plugin
+     * @return The document plugin
+     */
+    private Plugin getDocumentPlugin( )
+    {
+        return PluginService.getPlugin( DocumentPlugin.PLUGIN_NAME );
     }
 }

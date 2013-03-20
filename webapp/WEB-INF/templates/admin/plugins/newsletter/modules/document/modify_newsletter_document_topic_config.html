@@ -17,6 +17,34 @@
 	</div>
 </div>
 <div class="control-group">
+	<label class="control-label" for="portlets_id">#i18n{module.newsletter.document.modify_document_topic.portletList} *:</label>
+	<div class="controls">
+		<#if document_list_portlets?has_content>
+			<select multiple="multiple" id="portlets_id" name="portlets_id" >
+				<#list document_list_portlets as item>
+					<#if item.checked>
+						<option selected="selected" value="${item.code}" title="${item.name}">${item.name}</option>
+					<#else>
+						<option value="${item.code}" title="${item.name}">${item.name}</option>
+					</#if>
+				</#list>
+			</select>
+		<#else>
+			#i18n{module.newsletter.document.modify_document_topic.labelNoPortlet}
+		</#if>
+	</div>
+</div>
+<div class="control-group">
+	<label class="control-label" for="use_categories">#i18n{module.newsletter.document.modify_document_topic.useCategories} *:</label>
+	<div class="controls">
+		<input type="radio" class="radio inline" name="use_categories" value="true" <#if newsletterDocument.useDocumentCategories>checked="checked"</#if> />
+		#i18n{module.newsletter.document.modify_document_topic.radioUseCategories}
+		<input type="radio" class="radio inline" name="use_categories" value="false" <#if !newsletterDocument.useDocumentCategories>checked="checked"</#if> />
+		#i18n{module.newsletter.document.modify_document_topic.radioUsePortlets}
+		<span class="help-block">#i18n{module.newsletter.document.modify_document_topic.useCategoriesHelp}</span>
+	</div>
+</div>
+<div class="control-group">
 	<label class="control-label" for="template_id">#i18n{module.newsletter.document.modify_document_topic.templatesList} *:</label>
 	<div class="controls">
 		<#if templates_list?has_content>

@@ -10,6 +10,8 @@ import fr.paris.lutece.util.ReferenceList;
 
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -100,34 +102,36 @@ public final class NewsletterDocumentHome
     }
 
     /**
-     * Returns a collection any portlet containing at least a published document
+     * Returns the collection of any portlet containing at least a published
+     * document
      * @param plugin The plugin
-     * @return the portlets in form of Collection
+     * @return the portlets list
      */
-    public static ReferenceList getDocumentLists( Plugin plugin )
+    public static ReferenceList getDocumentListPortlets( Plugin plugin )
     {
-        return _dao.selectDocumentTypePortlets( plugin );
+        return _dao.selectDocumentListPortlets( );
     }
 
     /**
-     * Associate a topic to a newsletter
+     * Associate a document category to a newsletter topic
      * @param nTopicId the topic identifier
      * @param nDocumentCategoryId the id of the document category to associate
      * @param plugin the Plugin
      */
-    public static void associateNewsLetterDocumentList( int nTopicId, int nDocumentCategoryId, Plugin plugin )
+    public static void associateNewsLetterDocumentCategory( int nTopicId, int nDocumentCategoryId, Plugin plugin )
     {
-        _dao.associateNewsLetterDocumentList( nTopicId, nDocumentCategoryId, plugin );
+        _dao.associateNewsLetterDocumentCategory( nTopicId, nDocumentCategoryId, plugin );
     }
 
     /**
-     * Removes the relationship between a list of topics and a newsletter
-     * @param nNewsLetterId the newsletter identifier
+     * Removes the relationship between a list of document categories and a
+     * newsletter topic
+     * @param nTopicId the newsletter identifier
      * @param plugin the Plugin
      */
-    public static void removeNewsLetterDocumentList( int nNewsLetterId, Plugin plugin )
+    public static void removeNewsLetterDocumentCategories( int nTopicId, Plugin plugin )
     {
-        _dao.deleteNewsLetterDocumentList( nNewsLetterId, plugin );
+        _dao.deleteNewsLetterDocumentCategories( nTopicId, plugin );
     }
 
     /**
@@ -139,6 +143,51 @@ public final class NewsletterDocumentHome
     public static int[] findNewsletterCategoryIds( int nTopicId, Plugin plugin )
     {
         return _dao.selectNewsletterCategoryIds( nTopicId, plugin );
+    }
+
+    /**
+     * Associate a new portlet to a newsletter topic
+     * @param nTopicId the topic id
+     * @param nPortletId the portlet identifier
+     * @param plugin the newsletter document plugin
+     */
+    public static void associateNewsLetterDocumentPortlet( int nTopicId, int nPortletId, Plugin plugin )
+    {
+        _dao.associateNewsLetterDocumentPortlet( nTopicId, nPortletId, plugin );
+    }
+
+    /**
+     * Remove the relationship between a topic and the list of portlets
+     * @param nTopicId the topic id
+     * @param plugin the newsletter document plugin
+     */
+    public static void removeNewsLetterDocumentPortlet( int nTopicId, Plugin plugin )
+    {
+        _dao.deleteNewsLetterDocumentPortlet( nTopicId, plugin );
+    }
+
+    /**
+     * loads the list of document list portlets linked to the newsletter
+     * @param nTopicId the topic identifier
+     * @param plugin the plugin
+     * @return the array of portlets id
+     */
+    public static int[] findNewsletterPortletsIds( int nTopicId, Plugin plugin )
+    {
+        return _dao.selectNewsletterPortletsIds( nTopicId, plugin );
+    }
+
+    /**
+     * Get the list of id of published documents associated with a given
+     * collection of portlets.
+     * @param nPortletsIds The list of portlet ids.
+     * @param datePublishing TODO
+     * @param plugin The document plugin
+     * @return The list of documents id.
+     */
+    public static List<Integer> getPublishedDocumentsIdsListByPortletIds( int[] nPortletsIds, Date datePublishing, Plugin plugin )
+    {
+        return _dao.getPublishedDocumentsIdsListByPortletIds( nPortletsIds, datePublishing, plugin );
     }
 
     /**
