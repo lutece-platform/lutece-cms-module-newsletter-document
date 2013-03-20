@@ -8,6 +8,11 @@ import org.apache.commons.lang.StringUtils;
  */
 public final class NewsletterDocumentUtils
 {
+    /**
+     * Image file type
+     */
+    public static final String CONSTANT_IMG_FILE_TYPE = "image";
+
     private static final String CONSTANT_ZERO = "0";
 
     /**

@@ -17,7 +17,9 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.portlet.PortletService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppLogService;
+import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.util.html.HtmlTemplate;
+import fr.paris.lutece.util.url.UrlItem;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -44,6 +46,10 @@ public class NewsletterDocumentService
     private static final String MARK_IMG_PATH = "img_path";
     private static final String MARK_DOCUMENT_PORTLETS_COLLEC = "portlets_collec";
     private static final String MARK_DOCUMENT = "document";
+    private static final String MARK_ID = "id";
+    private static final String MARK_ATTRIBUTE_ID = "id_attribute";
+
+    private static final String DOCUMENT_RESOURCE_SERVLET_URL = "/document";
 
     private static NewsletterDocumentService _singleton = new NewsletterDocumentService( );
     private NewsletterService _newsletterService = NewsletterService.getService( );
@@ -190,7 +196,7 @@ public class NewsletterDocumentService
             {
                 String strImgFolder = _newsletterService.getUnsecuredImagefolder( );
                 String pictureName = NewsletterDocumentService.getInstance( ).copyFileFromDocument( document,
-                        NewsLetterConstants.CONSTANT_IMG_FILE_TYPE,
+                        NewsletterDocumentUtils.CONSTANT_IMG_FILE_TYPE,
                         _newsletterService.getUnsecuredFolderPath( ) + strImgFolder );
                 if ( pictureName != null )
                 {
@@ -199,7 +205,24 @@ public class NewsletterDocumentService
             }
             else
             {
+                String strProdUrl = AppPathService.getProdUrl( );
 
+                List<DocumentAttribute> listDocumentAttribute = document.getAttributes( );
+
+                for ( DocumentAttribute documentAttribute : listDocumentAttribute )
+                {
+                    // if binary or is a strFileType
+                    if ( documentAttribute.isBinary( )
+                            && documentAttribute.getValueContentType( ).contains(
+                                    NewsletterDocumentUtils.CONSTANT_IMG_FILE_TYPE ) )
+                    {
+                        UrlItem urlItem = new UrlItem( strProdUrl + DOCUMENT_RESOURCE_SERVLET_URL );
+                        urlItem.addParameter( MARK_ID, document.getId( ) );
+                        urlItem.addParameter( MARK_ATTRIBUTE_ID, documentAttribute.getId( ) );
+                        model.put( MARK_IMG_PATH, urlItem.getUrl( ) );
+                        break;
+                    }
+                }
             }
 
             model.put( NewsLetterConstants.MARK_BASE_URL, strBaseUrl );

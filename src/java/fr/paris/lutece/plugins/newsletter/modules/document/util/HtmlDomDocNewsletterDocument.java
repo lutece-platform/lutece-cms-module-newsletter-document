@@ -81,9 +81,9 @@ public class HtmlDomDocNewsletterDocument extends HtmlDomDocNewsletter
 
                     if ( elementType.getTagName( ).equals( CONSTANT_IMG ) )
                     {
-                        strFileName = _newsletterDocumentService
-                                .copyFileFromDocument( document, NewsLetterConstants.CONSTANT_IMG_FILE_TYPE,
-                                        strUnsecuredFolderPath + strUnsecuredFolder );
+                        strFileName = _newsletterDocumentService.copyFileFromDocument( document,
+                                NewsletterDocumentUtils.CONSTANT_IMG_FILE_TYPE, strUnsecuredFolderPath
+                                        + strUnsecuredFolder );
                     }
                     else
                     {
