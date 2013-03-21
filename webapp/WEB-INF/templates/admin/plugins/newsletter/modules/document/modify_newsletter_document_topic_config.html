@@ -2,7 +2,7 @@
 	<label class="control-label" for="category_list_id">#i18n{module.newsletter.document.modify_document_topic.categoryList} *:</label>
 	<div class="controls">
 		<#if category_list?has_content>
-			<select multiple="multiple" id="category_list_id" name="category_list_id" >
+			<select multiple="multiple" id="category_list_id" name="category_list_id" onchange="javascript:clearSelection(document.getElementById('portlets_id'));$('#use_categories').attr('checked', true);" >
 				<#list category_list as item>
 					<#if item.checked>
 						<option selected="selected" value="${item.code}" title="${item.name}">${item.name}</option>
@@ -20,7 +20,7 @@
 	<label class="control-label" for="portlets_id">#i18n{module.newsletter.document.modify_document_topic.portletList} *:</label>
 	<div class="controls">
 		<#if document_list_portlets?has_content>
-			<select multiple="multiple" id="portlets_id" name="portlets_id" >
+			<select multiple="multiple" id="portlets_id" name="portlets_id" onchange="javascript:clearSelection(document.getElementById('category_list_id'));$('#use_portlets').attr('checked', true);">
 				<#list document_list_portlets as item>
 					<#if item.checked>
 						<option selected="selected" value="${item.code}" title="${item.name}">${item.name}</option>
@@ -37,9 +37,9 @@
 <div class="control-group">
 	<label class="control-label" for="use_categories">#i18n{module.newsletter.document.modify_document_topic.useCategories} *:</label>
 	<div class="controls">
-		<input type="radio" class="radio inline" name="use_categories" value="true" <#if newsletterDocument.useDocumentCategories>checked="checked"</#if> />
+		<input type="radio" class="radio inline" id="use_categories" name="use_categories" value="true" <#if newsletterDocument.useDocumentCategories>checked="checked"</#if> />
 		#i18n{module.newsletter.document.modify_document_topic.radioUseCategories}
-		<input type="radio" class="radio inline" name="use_categories" value="false" <#if !newsletterDocument.useDocumentCategories>checked="checked"</#if> />
+		<input type="radio" class="radio inline" id="use_portlets" name="use_categories" value="false" <#if !newsletterDocument.useDocumentCategories>checked="checked"</#if> />
 		#i18n{module.newsletter.document.modify_document_topic.radioUsePortlets}
 		<span class="help-block">#i18n{module.newsletter.document.modify_document_topic.useCategoriesHelp}</span>
 	</div>
@@ -59,3 +59,13 @@
 		</#if>
 	</div>
 </div>
+<script>
+	function clearSelection( select )
+	{
+		var nb=select.options.length;
+		for(i=0;i<nb;i++)
+		{
+			select.options[i].selected=false;
+		}
+	}
+</script>
