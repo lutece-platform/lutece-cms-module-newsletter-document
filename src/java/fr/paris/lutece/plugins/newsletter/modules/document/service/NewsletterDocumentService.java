@@ -238,7 +238,7 @@ public class NewsletterDocumentService
             }
             else
             {
-                String strProdUrl = AppPathService.getProdUrl( );
+                String strProdUrl = AppPathService.getProdUrl( strBaseUrl );
 
                 List<DocumentAttribute> listDocumentAttribute = document.getAttributes( );
 
