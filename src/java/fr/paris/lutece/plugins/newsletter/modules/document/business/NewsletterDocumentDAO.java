@@ -31,7 +31,8 @@ public class NewsletterDocumentDAO implements INewsletterDocumentDAO
     private static final String SQL_QUERY_ASSOCIATE_NEWSLETTER_PORTLET = "INSERT INTO newsletter_document_portlet ( id_topic , id_portlet ) VALUES ( ?, ? ) ";
     private static final String SQL_QUERY_SELECT_NEWSLETTER_PORTLET_IDS = " SELECT id_portlet FROM newsletter_document_portlet WHERE id_topic = ? ";
     private static final String SQL_QUERY_DELETE_NEWSLETTER_PORTLET = "DELETE FROM newsletter_document_portlet WHERE id_topic = ?";
-    private static final String SQL_QUERY_SELECT_BY_PORTLET_ID_AND_STATUS = " SELECT DISTINCT id_document FROM document_published WHERE status = ? AND date_publishing >= ? AND id_portlet IN ";
+    private static final String SQL_QUERY_SELECT_BY_PORTLET_ID_AND_STATUS = " SELECT DISTINCT pub.id_document FROM document_published pub, document doc "
+            + "WHERE doc.id_document=pub.id_document AND pub.status = ? AND doc.date_modification >= ? AND pub.id_portlet IN ";
     private static final String SQL_QUERY_FIND_TEMPLATE = " SELECT count(id_template) FROM newsletter_document_topic WHERE id_template = ? ";
     private static final String SQL_FILTER_DATE_MODIF = " a.date_modification >=? ";
     private static final String SQL_FILTER_ID_PORTLET = " c.id_portlet = ? ";
