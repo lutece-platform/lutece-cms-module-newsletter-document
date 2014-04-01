@@ -2,7 +2,7 @@
 	<label class="control-label" for="category_list_id">#i18n{module.newsletter.document.modify_document_topic.categoryList} *:</label>
 	<div class="controls">
 		<#if category_list?has_content>
-			<select multiple="multiple" id="category_list_id" name="category_list_id" onchange="javascript:clearSelection(document.getElementById('portlets_id'));$('#use_categories').attr('checked', true);" >
+			<select multiple="multiple" class="input-xxlarge" id="category_list_id" name="category_list_id" onchange="javascript:clearSelection(document.getElementById('portlets_id'));$('#use_categories').attr('checked', true);" >
 				<#list category_list as item>
 					<#if item.checked>
 						<option selected="selected" value="${item.code}" title="${item.name}">${item.name}</option>
@@ -20,7 +20,7 @@
 	<label class="control-label" for="portlets_id">#i18n{module.newsletter.document.modify_document_topic.portletList} *:</label>
 	<div class="controls">
 		<#if document_list_portlets?has_content>
-			<select multiple="multiple" id="portlets_id" name="portlets_id" onchange="javascript:clearSelection(document.getElementById('category_list_id'));$('#use_portlets').attr('checked', true);">
+			<select multiple="multiple" class="input-xxlarge" id="portlets_id" name="portlets_id" onchange="javascript:clearSelection(document.getElementById('category_list_id'));$('#use_portlets').attr('checked', true);">
 				<#list document_list_portlets as item>
 					<#if item.checked>
 						<option selected="selected" value="${item.code}" title="${item.name}">${item.name}</option>
