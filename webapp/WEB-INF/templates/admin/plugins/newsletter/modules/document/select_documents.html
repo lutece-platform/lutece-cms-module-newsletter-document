@@ -4,22 +4,21 @@
 	<fieldset>
 		<legend>#i18n{module.newsletter.document.select_documents.labelSearchCriteria}</legend>
 	    <input type="hidden" name="input" value="${input}" />
-	   	<div class="control-group">
-			<label class="control-label" for="document_list_id">#i18n{module.newsletter.document.select_documents.labelDocumentListCollection} *</label>
-			<div class="controls">
-				<@combo name="document_list_id" default_value=document_list_id items=documents_lists_list />
+	   	<div class="form-group">
+			<label class="control-label col-xs-12 col-sm-2 col-md-2" for="document_list_id">#i18n{module.newsletter.document.select_documents.labelDocumentListCollection} *</label>
+			<div class="col-xs-12 col-sm-10 col-md-10">
+				<@comboWithParams name="document_list_id" default_value=document_list_id additionalParameters=" class=\"form-control\"" items=documents_lists_list />
 			</div>
 		</div>
-		<div class="control-group">
-			<label class="control-label" for="published_date">#i18n{module.newsletter.document.select_documents.labelPublishedSince} *</label>
-	    	<div class="controls">
-				<input name="published_date" value="${start_published_date}" checked="checked" type="text" />
+		<div class="form-group">
+			<label class="control-label col-xs-12 col-sm-2 col-md-2" for="published_date">#i18n{module.newsletter.document.select_documents.labelPublishedSince} *</label>
+	    	<div class="col-xs-12 col-sm-10 col-md-10">
+				<input name="published_date" value="${start_published_date}" class="form-control" type="text">
 			</div>
 		</div>
-		<div class="control-group">
-			<label class="control-label"></label>
-			<div class="controls">
-	    		<button class="btn btn-primary btn-small" type="submit" >#i18n{module.newsletter.document.select_documents.buttonSearch}</button>
+		<div class="form-group">
+			<div class="col-xs-12 col-sm-offset-2col-sm-10  col-md-offset-2 col-md-10">
+	    		<button class="btn btn-primary btn-flat" type="submit" >#i18n{module.newsletter.document.select_documents.buttonSearch}</button>
 	    	</div>
 	    </div>
 	</fieldset>
@@ -40,12 +39,14 @@
 	            <td>${document.title}</td>
 	            <td>${document.dateModification}</td>
 	            <td>
-					<input name="documents_list" value="${document.id}" class="checkbox" type="checkbox" />
+					<input name="documents_list" value="${document.id}" class="checkbox" type="checkbox">
 				</td>
 	        </tr>
 	        </#list>
 	    </table>
-	    <@combo name="template_id" default_value=0 items=documents_templates_list />
-		<button class="btn btn-primary btn-small" type="submit" >#i18n{module.newsletter.document.select_documents.buttonValidate}</button>
+	    <@comboWithParams name="template_id" default_value=0 additionalParameters=" class=\"form-control\"" items=documents_templates_list />
+		<button class="btn btn-primary btn-xs btn-flat" type="submit">
+			#i18n{module.newsletter.document.select_documents.buttonValidate}
+		</button>
 	</fieldset>
 </form>
