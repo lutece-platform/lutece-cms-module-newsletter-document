@@ -256,7 +256,7 @@ public class NewsletterDocumentTopicService implements INewsletterTopicService
         NewsletterDocument newsletterDocument = NewsletterDocumentHome.findByPrimaryKey( newsletterTopic.getId( ),
                 getNewsletterDocumentPlugin( ) );
         String strContent = NewsletterDocumentService.getInstance( ).generateDocumentsList( newsletterDocument,
-                newsletterDocument.getIdTemplate( ), newsletter.getDateLastSending( ), AppPathService.getBaseUrl( ),
+                newsletterDocument.getIdTemplate( ), newsletter.getDateLastSending( ), AppPathService.getProdUrl(""),
                 user, locale );
 
         return strContent;
