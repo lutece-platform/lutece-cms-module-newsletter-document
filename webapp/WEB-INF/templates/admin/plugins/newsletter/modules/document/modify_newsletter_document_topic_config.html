@@ -1,4 +1,16 @@
 <div class="form-group">
+	<label class="control-label col-xs-12 col-sm-2 col-md-2" for="use_categories">#i18n{module.newsletter.document.modify_document_topic.useCategories} *</label>
+	<div class="col-xs-12 col-sm-10 col-md-10">
+		<label class="radio-inline">
+			<input type="radio"  id="use_categories" name="use_categories" value="true" <#if newsletterDocument.useDocumentCategories>checked="checked"</#if>> #i18n{module.newsletter.document.modify_document_topic.radioUseCategories}
+		</label>
+		<label class="radio-inline">
+			<input type="radio" id="use_portlets" name="use_categories" value="false" <#if !newsletterDocument.useDocumentCategories>checked="checked"</#if>>	#i18n{module.newsletter.document.modify_document_topic.radioUsePortlets}
+		</label>
+		<p class="help-text">#i18n{module.newsletter.document.modify_document_topic.useCategoriesHelp}</p>
+	</div>
+</div>
+<div id="category" class="form-group">
 	<label class="control-label col-xs-12 col-sm-2 col-md-2" for="category_list_id">#i18n{module.newsletter.document.modify_document_topic.categoryList} *</label>
 	<div class="col-xs-12 col-sm-10 col-md-10">
 		<#if category_list?has_content>
@@ -16,7 +28,7 @@
 		</#if>
 	</div>
 </div>
-<div class="form-group">
+<div id="document" class="form-group">
 	<label class="control-label col-xs-12 col-sm-2 col-md-2" for="portlets_id">#i18n{module.newsletter.document.modify_document_topic.portletList} *</label>
 	<div class="col-xs-12 col-sm-10 col-md-10">
 		<#if document_list_portlets?has_content>
@@ -35,45 +47,32 @@
 	</div>
 </div>
 <div class="form-group">
-	<label class="control-label col-xs-12 col-sm-2 col-md-2" for="use_categories">#i18n{module.newsletter.document.modify_document_topic.useCategories} *</label>
-	<div class="col-xs-12 col-sm-10 col-md-10">
-		<label class="radio inline">
-			<input type="radio"  id="use_categories" name="use_categories" value="true" <#if newsletterDocument.useDocumentCategories>checked="checked"</#if>>
-			#i18n{module.newsletter.document.modify_document_topic.radioUseCategories}
-		</label>	
-		<label class="radio inline">
-			<input type="radio" class="radio inline" id="use_portlets" name="use_categories" value="false" <#if !newsletterDocument.useDocumentCategories>checked="checked"</#if>>
-			#i18n{module.newsletter.document.modify_document_topic.radioUsePortlets}
-		</label>	
-		<span class="help-block">#i18n{module.newsletter.document.modify_document_topic.useCategoriesHelp}</span>
-	</div>
-</div>
-<div class="form-group">
 	<label class="control-label col-xs-12 col-sm-2 col-md-2" for="template_id">#i18n{module.newsletter.document.modify_document_topic.templatesList} *:</label>
 	<div class="col-xs-12 col-sm-10 col-md-10">
 		<#if templates_list?has_content>
 			<#list templates_list as template >
-				<label class="radio inline">
-					<input class="radio inline" type="radio" name="template_id" value="${template.id}" <#if template.id=newsletterDocument.idTemplate>checked="checked"</#if>>
-					<img src="${img_path}/${template.picture}" class="thumblist-medium" alt="${template.description}" title="${template.description}"> ${template.description}
-				</label>	
+				<label class="radio-inline">
+					<input type="radio" name="template_id" value="${template.id}" <#if template.id=newsletterDocument.idTemplate>checked="checked"</#if>> ${template.description}
+					<!-- <img src="${img_path}/${template.picture}" class="thumblist-medium" alt="${template.description}" title="${template.description}"> -->
+				</label>
 			</#list>
-			<span class="help-block">#i18n{module.newsletter.document.modify_document_topic.templatesHelp}</span>
+			<span class="help-text">#i18n{module.newsletter.document.modify_document_topic.templatesHelp}</span>
 		<#else>
 			<input type="hidden" name="template_id" value="0">
-			<div class="alert alert-warning">
+			<div class="callout callout-warning">
 				<i class="fa fa-warning"></i> #i18n{newsletter.compose_newsletter.noNewsletterTemplate}
 			</div>
 		</#if>
 	</div>
 </div>
+
 <script>
-	function clearSelection( select )
-	{
-		var nb=select.options.length;
-		for(i=0;i<nb;i++)
-		{
-			select.options[i].selected=false;
-		}
-	}
+function clearSelection( select ){
+	var nb=select.options.length;
+	for(i=0;i<nb;i++){select.options[i].selected=false;}
+}
+
+$(function(){
+	$(""#)
+});
 </script>
