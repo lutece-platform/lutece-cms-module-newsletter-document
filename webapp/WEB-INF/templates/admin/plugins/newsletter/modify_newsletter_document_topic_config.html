@@ -1,0 +1,89 @@
+<div class="form-group">
+	<label class="control-label col-xs-12 col-sm-3" for="use_categories">#i18n{module.newsletter.document.modify_document_topic.useCategories} *</label>
+	<div class="col-xs-12 col-sm-9">
+		<label class="radio-inline">
+			<input type="radio"  id="use_categories" name="use_categories" value="true" <#if newsletterDocument.useDocumentCategories>checked="checked"</#if> <#if !category_list?has_content>disabled="disabled"</#if>>
+			#i18n{module.newsletter.document.modify_document_topic.radioUseCategories}
+		</label>
+		<label class="radio-inline">
+			<input type="radio" id="use_portlets" name="use_categories" value="false" <#if !newsletterDocument.useDocumentCategories>checked="checked"</#if> <#if !document_list_portlets?has_content>disabled="disabled"</#if>>
+			#i18n{module.newsletter.document.modify_document_topic.radioUsePortlets}
+		</label>
+		<span class="help-block">#i18n{module.newsletter.document.modify_document_topic.useCategoriesHelp}</span>
+	</div>
+</div>
+<div id="categories" class="form-group">
+	<label class="control-label col-xs-12 col-sm-3" for="category_list_id">#i18n{module.newsletter.document.modify_document_topic.categoryList} *</label>
+	<div class="col-xs-12 col-sm-9">
+		<#if category_list?has_content>
+			<select multiple="multiple" class="form-control" id="category_list_id" name="category_list_id">
+				<#list category_list as item>
+					<#if item.checked>
+						<option selected="selected" value="${item.code}" title="${item.name}">${item.name}</option>
+					<#else>
+						<option value="${item.code}" title="${item.name}">${item.name}</option>
+					</#if>
+				</#list>
+			</select>
+		<#else>
+			#i18n{module.newsletter.document.modify_document_topic.labelNoCategory}
+		</#if>
+	</div>
+</div>
+<div class="form-group" id="documents" >
+	<label class="control-label col-xs-12 col-sm-3" for="portlets_id">#i18n{module.newsletter.document.modify_document_topic.portletList} *</label>
+	<div class="col-xs-12 col-sm-9">
+		<#if document_list_portlets?has_content>
+			<select multiple="multiple" class="form-control" id="portlets_id" name="portlets_id">
+			 	<#list document_list_portlets as item>
+					<#if item.checked>
+						<option selected="selected" value="${item.code}" title="${item.name}">${item.name}</option>
+					<#else>
+						<option value="${item.code}" title="${item.name}">${item.name}</option>
+					</#if>
+				</#list>
+			</select>
+		<#else>
+			<div class="callout callout-warning">#i18n{module.newsletter.document.modify_document_topic.labelNoPortlet}</div>
+		</#if>
+	</div>
+</div>
+<div class="form-group">
+	<label class="control-label col-xs-12 col-sm-3 for="template_id">#i18n{module.newsletter.document.modify_document_topic.templatesList} *:</label>
+	<div class="col-xs-12 col-sm-9">
+		<#if templates_list?has_content>
+			<#list templates_list as template >
+				<label class="radio inline">
+					<input class="radio inline" type="radio" name="template_id" value="${template.id}" <#if template.id=newsletterDocument.idTemplate>checked="checked"</#if>>
+					<img src="${img_path}/${template.picture}" class="img-thumbnail img-responsive thumbnail-xs" alt="${template.description}" title="${template.description}"> ${template.description}
+				</label>
+			</#list>
+			<span class="help-text">#i18n{module.newsletter.document.modify_document_topic.templatesHelp}</span>
+		<#else>
+			<input type="hidden" name="template_id" value="0">
+			<div class="callout callout-warning">
+				<i class="fa fa-warning"></i> #i18n{newsletter.compose_newsletter.noNewsletterTemplate}
+			</div>
+		</#if>
+	</div>
+</div>
+<script>
+$(function(){
+	$("<#if newsletterDocument.useDocumentCategories>#documents<#else>#categories</#if>").toggle();
+	$("#use_categories").on("change", function(){
+		$("#documents").toggle();
+		$("#categories").toggle();
+		$("#portlets_id option:selected").each(function(){
+				$(this).removeAttr("selected");
+		});
+	});
+
+	$("#use_portlets").on("change", function(){
+		$("#documents").toggle();
+		$("#categories").toggle();
+		$("#category_list_id option:selected").each(function(){
+				$(this).removeAttr("selected");
+		});
+	});
+});
+</script>
