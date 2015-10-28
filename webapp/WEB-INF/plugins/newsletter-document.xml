@@ -3,7 +3,7 @@
     <!-- Plugin Informations -->
     <name>newsletter-document</name>
     <class>fr.paris.lutece.plugins.newsletter.modules.document.service.NewsletterDocumentPlugin</class>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
     <description>module.newsletter.document.module.description</description>
     <documentation/>
     <installation/>
