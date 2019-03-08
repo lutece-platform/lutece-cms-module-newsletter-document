@@ -33,6 +33,13 @@
  */
 package fr.paris.lutece.plugins.newsletter.modules.document.service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+
 import fr.paris.lutece.plugins.document.service.DocumentPlugin;
 import fr.paris.lutece.plugins.newsletter.business.NewsLetter;
 import fr.paris.lutece.plugins.newsletter.business.NewsLetterHome;
@@ -53,13 +60,6 @@ import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.html.HtmlTemplate;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -341,5 +341,24 @@ public class NewsletterDocumentTopicService implements INewsletterTopicService
     private Plugin getDocumentPlugin( )
     {
         return PluginService.getPlugin( DocumentPlugin.PLUGIN_NAME );
+    }
+    
+    @Override
+    public void copyNewsletterTopic(int oldTopicId, NewsletterTopic newsletterTopic, AdminUser user, Locale locale) {
+    	 NewsletterDocument oldDocument = NewsletterDocumentHome.findByPrimaryKey( oldTopicId,
+                 getNewsletterDocumentPlugin( ) );
+    	
+    	 NewsletterDocument topic = new NewsletterDocument( );
+         topic.setId( newsletterTopic.getId( ) );
+         if (oldDocument != null) {
+        	 topic.setIdTemplate( oldDocument.getIdTemplate() );
+         } else {
+        	 topic.setIdTemplate( 0 );
+         }
+         topic.setUseDocumentCategories( true );
+         
+         NewsletterDocumentHome.createDocumentTopic( topic, getNewsletterDocumentPlugin( ) );
+         NewsletterDocumentHome.associateNewsLetterDocumentCategory( newsletterTopic.getId( ),
+                 Integer.parseInt( CONSTANT_UNCATEGORIZED_DOCUMENTS_KEY ), getNewsletterDocumentPlugin( ) );
     }
 }
